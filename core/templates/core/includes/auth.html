@@ -1,0 +1,65 @@
+{% load static %}
+<div id="main-content" class="main-hide" style="position: relative; width: 100vw; height: 100vh; overflow: hidden;">
+    <img src="{% static 'core/images/company_logo.png' %}?v=2" alt="Company Logo" class="company-logo">
+
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <!-- Login Form -->
+    <form id="login-form">
+        <h3>Login Here</h3>
+
+        <label for="username">Username</label>
+        <input type="text" placeholder="Email or Phone" id="username">
+
+        <label for="password">Password</label>
+        <input type="password" placeholder="Password" id="password">
+        <a href="#" class="forgot-password">Forgot Password?</a>
+
+        <button type="button" id="login-submit-btn">Log In</button>
+
+        <div class="social">
+            <div class="go">
+                <i class="fa-brands fa-google"></i> Google
+            </div>
+            <div class="apple">
+                <i class="fa-brands fa-apple"></i> Apple
+            </div>
+        </div>
+
+        <div class="toggle-box">
+            <p>Don't have an account? <span id="btn-show-signup">Sign Up</span></p>
+        </div>
+    </form>
+
+    <!-- Sign Up Form -->
+    <form id="signup-form" style="display: none;">
+        <h3>Sign Up Here</h3>
+
+        <label for="email">Email</label>
+        <input type="email" placeholder="Email" id="email">
+
+        <label for="new-password">Password</label>
+        <input type="password" placeholder="Password" id="new-password">
+
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" placeholder="Confirm Password" id="confirm-password">
+
+        <button type="button" id="signup-submit-btn">Sign Up</button>
+
+        <div class="social">
+            <div class="go">
+                <i class="fa-brands fa-google"></i> Google
+            </div>
+            <div class="apple">
+                <i class="fa-brands fa-apple"></i> Apple
+            </div>
+        </div>
+
+        <div class="toggle-box">
+            <p>Already have an account? <span id="btn-show-login">Log In</span></p>
+        </div>
+    </form>
+</div>

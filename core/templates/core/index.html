@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opuluxe AI</title>
+    <link rel="icon" type="image/png" href="{% static 'core/images/company_icon.png' %}?v=2">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=8">
+    <link rel="stylesheet" href="{% static 'core/css/intro.css' %}?v=8">
+
+    <link rel="stylesheet" href="{% static 'core/css/auth.css' %}?v=8">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+
+<body>
+
+
+
+
+    {% include 'core/includes/intro.html' %}
+    {% include 'core/includes/auth.html' %}
+
+    <!-- Status Indicator -->
+    <div id="db-status"
+        style="position: fixed; bottom: 10px; right: 10px; font-size: 10px; color: rgba(255,255,255,0.3); z-index: 2000;">
+        DB: {{ db_status }}
+    </div>
+
+    <!-- Scripts -->
+    {% if clear_stale_session %}
+    <script>
+        // If the server rendered the index page, the session is definitely inactive.
+        // Clear local cache to prevent redirection loops from old code.
+        localStorage.removeItem('isLoggedIn');
+    </script>
+    {% endif %}
+    <script src="{% static 'core/js/intro.js' %}?v=8"></script>
+    <script src="{% static 'core/js/auth.js' %}?v=8"> </script>
+
+</body>
+
+</html>

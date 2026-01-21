@@ -1,0 +1,587 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Opuluxe AI</title>
+    <link rel="icon" type="image/png" href="{% static 'core/images/company_icon.png' %}?v=2">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=8">
+    <link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}?v=8">
+    <link rel="stylesheet" href="{% static 'core/css/intro.css' %}?v=8">
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+
+<body class="look-default">
+
+
+
+    {% include 'core/includes/intro.html' %}
+
+
+
+    <div class="toast-container">
+        <div class="toast" id="toast">
+            <i class="ri-check-line"></i> <span id="toast-msg">Action Successful</span>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay" onclick="toggleMobileMenu()"></div>
+
+    <aside class="sidebar main-hide" id="sidebar">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <i class="ri-menu-fold-line" id="sidebar-icon"></i>
+        </button>
+        <button class="new-chat-btn" onclick="startNewChat()">
+            <i class="ri-add-line"></i> <span class="nav-label" data-t="new_chat">New Chat</span>
+        </button>
+
+        <div class="sidebar-group" style="flex:1;">
+            <div style="font-size:11px; font-weight:700; color:var(--text-muted); padding:0 14px; margin-bottom:12px;"
+                class="nav-label" data-t="history">HISTORY</div>
+
+            <div class="nav-item" id="history-search-item" onclick="toggleHistorySearch(event)">
+                <i class="ri-search-line"></i>
+                <span class="nav-label" id="history-search-label" data-t="search_history">Search History</span>
+                <input type="text" id="history-search-input" placeholder="Search chats..."
+                    data-t-placeholder="search_chats_place" onclick="event.stopPropagation()"
+                    style="display:none; width: 100%; background: transparent; border: none; color: var(--text-main); font-size: 14px; outline: none; margin-left: 10px;">
+            </div>
+
+            <div id="chat-history-list" style="margin-top: 10px;">
+                <!-- Recent chat items will be injected here -->
+            </div>
+        </div>
+        <div class="sidebar-group" style="border-top:1px solid var(--border); padding-top:16px;">
+            <div class="nav-item" onclick="action('persona')"><i class="ri-user-add-line"></i> <span class="nav-label"
+                    data-t="adding_persons">Adding Persons</span></div>
+            <div class="nav-item" onclick="action('subscription')"><i class="ri-vip-crown-2-line"></i> <span
+                    class="nav-label" data-t="subscription">Subscription</span></div>
+            <div class="nav-item" onclick="action('settings')"><i class="ri-settings-3-line"></i> <span
+                    class="nav-label" data-t="settings">Settings</span></div>
+            <div class="nav-item" onclick="logout()" style="color: #ff4d4d;"><i class="ri-logout-box-r-line"></i> <span
+                    class="nav-label" data-t="logout">Logout</span></div>
+        </div>
+    </aside>
+
+    <main class="main-content main-hide">
+
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <i class="ri-menu-line"></i>
+        </button>
+
+        <img src="{% static 'core/images/company_logo.png' %}?v=2" alt="Company Logo" class="dashboard-logo">
+
+        <div class="chat-scroll-area" id="scroll-container">
+            <div class="chat-container" id="chat-root">
+                <div id="welcome" style="margin-top: 10vh; text-align: center;">
+                    <div
+                        style="width:72px; height:72px; background:var(--bg-glass); border-radius:20px; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); box-shadow:var(--shadow-float); overflow: hidden;">
+                        <img src="{% static 'core/images/company_icon.png' %}" alt="Icon"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <h1 data-t="app_name">OPULUXE AI</h1>
+                    <p style="color:var(--text-muted)" data-t="welcome_desc">Welcome to AI-powered virtual personal
+                        shopping assistants. Ready for shopping.</p>
+                    <div style="display:flex; gap:10px; justify-content:center; margin-top:20px; flex-wrap:wrap;">
+                        <span class="chip" onclick="setInput('Suggest a morning outfit for an office event')"><i
+                                class="ri-shirt-line"></i> Morning Outfit</span>
+                        <span class="chip" onclick="setInput('What should I wear for a summer wedding?')"><i
+                                class="ri-heart-line"></i> Wedding Wear</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-wrapper" id="input-wrapper">
+
+            <div class="input-bar" id="input-bar" onclick="maximizeInput(event)">
+
+                <div class="drag-overlay"><i class="ri-upload-cloud-2-line"></i> Drop files here</div>
+                <div class="collapse-input-btn" onclick="minimizeInput(event)"><i class="ri-arrow-down-s-line"></i>
+                </div>
+                <div id="file-preview" style="display:none; padding-bottom:10px;"></div>
+
+                <div class="input-row">
+                    <button class="btn-icon" onclick="document.getElementById('file-up').click()"><i
+                            class="ri-attachment-2"></i></button>
+                    <input type="file" id="file-up" hidden accept="image/*" onchange="handleFileSelect(this)">
+                    <textarea id="user-input" rows="1" placeholder="Type a message or '/'..."
+                        data-t-placeholder="chat_input_place" oninput="autoResize()"></textarea>
+                    <button class="btn-icon" onclick="startVoice()"><i class="ri-mic-line"></i></button>
+                    <button class="send-btn" id="send-btn" disabled onclick="sendMessage()"><i
+                            class="ri-arrow-up-line"></i></button>
+                </div>
+            </div>
+
+            <div class="voice-island" id="voice-island">
+                <div style="display:flex; align-items:center;">
+                    <div class="waveform">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                    <span style="color:var(--text-island); font-weight:600; margin-left:12px;">Listening...</span>
+                </div>
+                <button class="voice-close-btn" onclick="stopVoice()"><i class="ri-close-line"></i></button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Settings Modal (Moved outside main for reliability) -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="settings-container">
+            <div class="settings-sidebar">
+                <button class="modal-close" onclick="closeSettings()"><i class="ri-close-line"></i></button>
+                <div class="sidebar-menu">
+                    <div class="menu-item active" onclick="switchSettingsTab('general')">
+                        <i class="ri-settings-4-line"></i> <span data-t="general">General</span>
+                    </div>
+                    <div class="menu-item" onclick="switchSettingsTab('notifications')">
+                        <i class="ri-notification-3-line"></i> <span data-t="notifications">Notifications</span>
+                    </div>
+                    <div class="menu-item" onclick="switchSettingsTab('personalization')">
+                        <i class="ri-user-settings-line"></i> <span data-t="personalization">Personalization</span>
+                    </div>
+                    <div class="menu-item" onclick="switchSettingsTab('apps')">
+                        <i class="ri-apps-2-line"></i> <span data-t="apps_tab">Apps</span>
+                    </div>
+                    <div class="menu-item" onclick="switchSettingsTab('data')">
+                        <i class="ri-database-2-line"></i> <span data-t="data_controls">Data controls</span>
+                    </div>
+                    <div class="menu-item" onclick="switchSettingsTab('security')">
+                        <i class="ri-shield-check-line"></i> <span data-t="security">Security</span>
+                    </div>
+                    <div class="menu-item" onclick="switchSettingsTab('parental')">
+                        <i class="ri-parent-line"></i> <span data-t="parental_controls">Parental controls</span>
+                    </div>
+                    <div class="menu-item" onclick="switchSettingsTab('account')">
+                        <i class="ri-user-3-line"></i> <span data-t="account">Account</span>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-content">
+                <div id="settings-general" class="settings-tab active">
+                    <h2 data-t="general">General</h2>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label" data-t="theme_cust">Theme Customization</div>
+                            <div class="setting-desc" data-t="theme_cust_desc">Switch between optimized visual looks for
+                                the platform.</div>
+                        </div>
+                        <div class="setting-action">
+                            <button class="setting-btn" onclick="switchTheme()">
+                                <i class="ri-palette-line"></i> <span data-t="change_look">Change Look</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label" data-t="language">Language</div>
+                            <div class="setting-desc" data-t="language_desc">Choose your preferred Indian language for
+                                the interface.</div>
+                        </div>
+                        <div class="setting-action">
+                            <select class="setting-select" id="language-select" onchange="changeLanguage(this.value)">
+                                <option value="en">English (Default)</option>
+                                <option value="hi">हिन्दी (Hindi)</option>
+                                <option value="ta">தமிழ் (Tamil)</option>
+                                <option value="te">తెలుగు (Telugu)</option>
+                                <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                                <option value="ml">മലയാളം (Malayalam)</option>
+                                <option value="mr">मराठी (Marathi)</option>
+                                <option value="bn">বাংলা (Bengali)</option>
+                                <option value="gu">ગુજરાતી (Gujarati)</option>
+                                <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                </div>
+                <!-- Placeholder for other tabs -->
+                <div id="settings-notifications" class="settings-tab">
+                    <h2 data-t="notifications">Notifications</h2>
+                    <p data-t="notif_desc">Manage your notification preferences here.</p>
+
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label" data-t="responses">Responses</div>
+                            <div class="setting-desc" data-t="responses_desc">Get notified when ChatGPT responds to
+                                requests that take time, like research or image generation.</div>
+                        </div>
+                        <div class="setting-action">
+                            <select class="setting-select">
+                                <option>Push</option>
+                                <option>Off</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label" data-t="group_chats">Group chats</div>
+                            <div class="setting-desc" data-t="group_chats_desc">You'll receive notifications for new
+                                messages from group chats.</div>
+                        </div>
+                        <div class="setting-action">
+                            <select class="setting-select">
+                                <option>Push</option>
+                                <option>Off</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label" data-t="recommendations">Recommendations</div>
+                            <div class="setting-desc" data-t="recommendations_desc">Stay in the loop on new tools, tips,
+                                and features from Opuluxe AI.</div>
+                        </div>
+                        <div class="setting-action">
+                            <select class="setting-select">
+                                <option>Push, Email</option>
+                                <option>Push Only</option>
+                                <option>Email Only</option>
+                                <option>Off</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="settings-personalization" class="settings-tab">
+                    <h2 data-t="personalization">Personalization</h2>
+                    <p data-t="pers_desc">Customize your experience.</p>
+                </div>
+                <div id="settings-apps" class="settings-tab">
+                    <h2 data-t="apps_tab">Apps</h2>
+                    <p data-t="apps_desc">Manage connected applications.</p>
+                </div>
+                <div id="settings-data" class="settings-tab">
+                    <h2 data-t="data_controls">Data Controls</h2>
+                    <p data-t="data_desc">Manage your data and privacy settings.</p>
+                </div>
+                <div id="settings-security" class="settings-tab">
+                    <h2 data-t="security">Security</h2>
+                    <p data-t="sec_desc">Enhance your account security.</p>
+                </div>
+                <div id="settings-parental" class="settings-tab">
+                    <h2 data-t="parental_controls">Parental Controls</h2>
+                    <p data-t="par_desc">Set up parental controls.</p>
+                </div>
+                <div id="settings-account" class="settings-tab">
+                    <h2 data-t="account">Account</h2>
+                    <p data-t="acc_desc">Manage your account settings.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Measurement Modal (New Feature) -->
+    <div id="measurement-modal" class="modal-overlay">
+        <div class="settings-container measurement-box" style="max-width:800px; height: auto; flex-direction: column;">
+
+            <div class="measurement-header"
+                style="display:flex; justify-content:space-between; align-items:center; padding: 25px 30px; border-bottom: 1px solid var(--border); background: #1a1a1a;">
+                <h2 style="margin:0; font-family: var(--font-brand); color: #fff;">Human Measurements</h2>
+                <button onclick="closeMeasurementModal()"
+                    style="background:none; border:none; color:#888; font-size:24px; cursor:pointer;"><i
+                        class="ri-close-line"></i></button>
+            </div>
+
+            <div class="settings-content" style="padding: 30px; overflow-y: auto; max-height: 80vh; width: 100%;">
+
+                <!-- Step 0: Profiles List (Initial View) -->
+                <div class="measurement-step active" id="step-profiles">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h3 style="margin:0; color:var(--accent);">Saved Profiles</h3>
+                        <button class="setting-btn" onclick="startNewProfile()"
+                            style="background:var(--accent)!important; color:var(--accent-text)!important; padding: 8px 16px!important;">
+                            <i class="ri-add-line"></i> Add New
+                        </button>
+                    </div>
+                    <div id="profiles-container" style="display:grid; gap:15px;">
+                        <!-- Profiles will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Step 1: Profile Name & Photo -->
+                <div class="measurement-step" id="step-name" style="display:none;">
+                    <h3 style="margin-bottom:20px; color:var(--accent);">Profile Identity</h3>
+                    <div style="display:grid; grid-template-columns: 200px 1fr; gap:30px; align-items: start;">
+                        <div class="photo-upload-container">
+                            <label
+                                style="display:block; margin-bottom:10px; font-size:12px; color:var(--text-muted);">FULL
+                                BODY PHOTO</label>
+                            <div id="photo-preview" onclick="document.getElementById('prof-photo-input').click()"
+                                style="width:200px; height:280px; background:var(--bg-glass); border:1px dashed var(--border); border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; transition:0.3s;">
+                                <i class="ri-user-add-line"
+                                    style="font-size:32px; color:var(--text-muted); margin-bottom:10px;"></i>
+                                <span style="font-size:12px; color:var(--text-muted);">Add Photo</span>
+                            </div>
+                            <input type="file" id="prof-photo-input" hidden accept="image/*"
+                                onchange="handleProfilePhoto(this)">
+                        </div>
+                        <div class="input-field">
+                            <label style="display:block; margin-bottom:10px;">Profile Name</label>
+                            <input type="text" id="prof-name" class="setting-select"
+                                placeholder="e.g. My Personal, Brother, Client A"
+                                style="width:100%; font-size:16px; padding:12px; margin-bottom:20px;">
+
+                            <div class="reference-badge"
+                                style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px; border:1px solid var(--border);">
+                                <i class="ri-verified-badge-line" style="color:var(--accent);"></i>
+                                <span style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Clear
+                                    Quality Reference Required</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:30px; display:flex; gap:15px;">
+                        <button class="setting-btn" onclick="saveMeasurements()">Save Profile</button>
+                        <button class="setting-btn"
+                            style="background:rgba(139, 92, 246, 0.1)!important; border:1px solid var(--accent)!important; color:var(--accent);"
+                            onclick="goToStep('category')">Edit Measurements</button>
+                        <button class="setting-btn"
+                            style="background:transparent!important; border:1px solid var(--border)!important;"
+                            onclick="goToStep('profiles')">Back</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Category Selection -->
+                <div class="measurement-step" id="step-category" style="display:none;">
+                    <h3 style="margin-bottom:20px; color:var(--accent);">Category Selection</h3>
+                    <p style="color:var(--text-muted); margin-bottom:15px;">Who are these measurements for?</p>
+                    <div style="display:flex; gap:20px; margin-bottom:30px;">
+                        <button class="setting-btn category-btn" onclick="selectCategory('men')">Men / Boys</button>
+                        <button class="setting-btn category-btn" onclick="selectCategory('women')">Women /
+                            Girls</button>
+                    </div>
+                    <button class="setting-btn"
+                        style="background:transparent!important; border:1px solid var(--border)!important;"
+                        onclick="goToStep('name')">Back</button>
+                </div>
+
+                <!-- Step 3: Measurements (Dynamic) -->
+                <div class="measurement-step" id="step-measurements" style="display:none;">
+                    <div style="display:grid; grid-template-columns: 280px 1fr; gap:40px;">
+                        <div class="visual-guide">
+                            <div style="position:sticky; top:20px;">
+                                <h4 style="margin:0 0 15px; color:var(--accent); font-size:12px; letter-spacing:1px;">
+                                    VISUAL REFERENCE</h4>
+                                <div id="category-reference"
+                                    style="width:280px; height:400px; background:var(--bg-glass); border:1px solid var(--border); border-radius:16px; overflow:hidden;">
+                                    <img id="ref-img" src=""
+                                        style="width:100%; height:100%; object-fit:cover; opacity: 0.8;">
+                                </div>
+                                <p style="font-size:11px; color:var(--text-muted); margin-top:10px; line-height:1.5;">
+                                    Use this clear-quality reference to ensure accurate measurements for the best fit
+                                    results.</p>
+                            </div>
+                        </div>
+                        <div class="measurement-fields">
+                            <h3 style="margin-bottom:20px; color:var(--accent);">Measurements</h3>
+
+                            <div id="fields-men" style="display:none;">
+                                <h4
+                                    style="margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:5px;">
+                                    Top
+                                    (Shirt / Kurta)</h4>
+                                <div class="measurement-grid"
+                                    style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Neck</label><input
+                                            class="setting-select m-input" data-key="neck" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Chest</label><input
+                                            class="setting-select m-input" data-key="chest" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Waist</label><input
+                                            class="setting-select m-input" data-key="waist_top" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Shoulder</label><input
+                                            class="setting-select m-input" data-key="shoulder" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label style="display:block; margin-bottom:5px;">Sleeve
+                                            Length</label><input class="setting-select m-input" data-key="sleeve"
+                                            type="text" placeholder="inches" style="width:100%;"></div>
+                                </div>
+                                <h4
+                                    style="margin:25px 0 15px; border-bottom:1px solid var(--border); padding-bottom:5px;">
+                                    Bottom (Pant / Trouser)</h4>
+                                <div class="measurement-grid"
+                                    style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Waist</label><input
+                                            class="setting-select m-input" data-key="waist_bottom" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Hip</label><input
+                                            class="setting-select m-input" data-key="hip" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Thigh</label><input
+                                            class="setting-select m-input" data-key="thigh" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Knee</label><input
+                                            class="setting-select m-input" data-key="knee" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label style="display:block; margin-bottom:5px;">Bottom /
+                                            Ankle</label><input class="setting-select m-input" data-key="ankle"
+                                            type="text" placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label style="display:block; margin-bottom:5px;">Pant
+                                            Length</label><input class="setting-select m-input" data-key="pant_length"
+                                            type="text" placeholder="inches" style="width:100%;"></div>
+                                </div>
+                            </div>
+
+                            <div id="fields-women" style="display:none;">
+                                <h4
+                                    style="margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:5px;">
+                                    Top
+                                    (Top / Kurti / Blouse)</h4>
+                                <div class="measurement-grid"
+                                    style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Bust</label><input
+                                            class="setting-select w-input" data-key="bust" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Under-bust</label><input
+                                            class="setting-select w-input" data-key="underbust" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Waist</label><input
+                                            class="setting-select w-input" data-key="waist_top" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Shoulder</label><input
+                                            class="setting-select w-input" data-key="shoulder" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label style="display:block; margin-bottom:5px;">Sleeve
+                                            Length</label><input class="setting-select w-input" data-key="sleeve"
+                                            type="text" placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label style="display:block; margin-bottom:5px;">Kurti
+                                            Length</label><input class="setting-select w-input" data-key="kurti_length"
+                                            type="text" placeholder="inches" style="width:100%;"></div>
+                                </div>
+                                <h4
+                                    style="margin:25px 0 15px; border-bottom:1px solid var(--border); padding-bottom:5px;">
+                                    Bottom (Leggings / Skirt / Pant)</h4>
+                                <div class="measurement-grid"
+                                    style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Waist</label><input
+                                            class="setting-select w-input" data-key="waist_bottom" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Hip</label><input
+                                            class="setting-select w-input" data-key="hip" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Thigh</label><input
+                                            class="setting-select w-input" data-key="thigh" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                    <div class="input-field"><label
+                                            style="display:block; margin-bottom:5px;">Length</label><input
+                                            class="setting-select w-input" data-key="length" type="text"
+                                            placeholder="inches" style="width:100%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="input-field" style="margin-top:20px;">
+                                <label style="display:block; margin-bottom:10px;">Upload Reference Image
+                                    (Optional)</label>
+                                <div id="measurement-ref-photo-preview"
+                                    onclick="document.getElementById('measurement-ref-photo-input').click()"
+                                    style="width:100%; max-width:200px; height:280px; background:var(--bg-glass); border:1px dashed var(--border); border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; transition:0.3s;">
+                                    <i class="ri-image-add-line"
+                                        style="font-size:32px; color:var(--text-muted); margin-bottom:10px;"></i>
+                                    <span style="font-size:12px; color:var(--text-muted);">Add Reference Image</span>
+                                </div>
+                                <input type="file" id="measurement-ref-photo-input" hidden accept="image/*"
+                                    onchange="handleMeasurementRefPhoto(this)">
+                                <p style="font-size:11px; color:var(--text-muted); margin-top:10px; line-height:1.5;">
+                                    This image will be saved with the profile for future reference.</p>
+                            </div>
+
+                            <div style="margin-top:30px; display:flex; gap:15px;">
+                                <button class="setting-btn" onclick="saveMeasurements()">Save Measurements</button>
+                                <button class="setting-btn"
+                                    style="background:transparent!important; border:1px solid var(--border)!important;"
+                                    onclick="goToStep('fit')">Next: Fit Preferences</button>
+                                <button class="setting-btn"
+                                    style="background:transparent!important; border:1px solid var(--border)!important;"
+                                    onclick="goToStep('category')">Back</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="measurement-step" id="step-fit" style="display:none;">
+                    <h3 style="margin-bottom:20px; color:var(--accent);">Fit Preferences</h3>
+                    <div class="measurement-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                        <div class="input-field"><label style="display:block; margin-bottom:5px;">Fit
+                                type</label><select id="fit-type" class="setting-select" style="width:100%;">
+                                <option>Slim fit</option>
+                                <option>Regular fit</option>
+                                <option>Loose fit</option>
+                            </select></div>
+                        <div class="input-field"><label style="display:block; margin-bottom:5px;">Comfort</label><select
+                                id="fit-comfort" class="setting-select" style="width:100%;">
+                                <option>Tight</option>
+                                <option>Comfortable</option>
+                            </select></div>
+                        <div class="input-field"><label style="display:block; margin-bottom:5px;">Waist
+                                type</label><select id="fit-waist" class="setting-select" style="width:100%;">
+                                <option>High waist</option>
+                                <option>Mid waist</option>
+                                <option>Low waist</option>
+                            </select></div>
+                        <div class="input-field"><label style="display:block; margin-bottom:5px;">Length</label><select
+                                id="fit-length" class="setting-select" style="width:100%;">
+                                <option>Short</option>
+                                <option>Normal</option>
+                                <option>Long</option>
+                            </select></div>
+                    </div>
+                    <div class="input-field" style="margin-top:20px;">
+                        <label style="display:block; margin-bottom:5px;">Optional notes</label>
+                        <textarea id="fit-notes" class="setting-textarea" placeholder="Add any specific details here..."
+                            style="width:100%; min-height:100px; background:var(--bg-glass); border:1px solid var(--border); color:white; padding:10px; border-radius:8px;"></textarea>
+                    </div>
+                    <div style="margin-top:30px; display:flex; gap:15px;">
+                        <button class="setting-btn"
+                            style="background:var(--accent)!important; color:var(--accent-text)!important;"
+                            onclick="saveMeasurements()">Save Profile</button>
+                        <button class="setting-btn"
+                            style="background:transparent!important; border:1px solid var(--border)!important;"
+                            onclick="goToStep('measurements')">Back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'core/js/dashboard.js' %}?v=8"></script>
+    <script src="{% static 'core/js/intro.js' %}?v=8"></script>
+
+
+</body>
+
+</html>

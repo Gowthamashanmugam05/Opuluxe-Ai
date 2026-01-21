@@ -1,0 +1,56 @@
+:root {
+    --primary-color: #ffffff;
+    --gradient-color: linear-gradient(135deg, #ffffff 0%, #d1d5db 100%);
+    --bg-dark: #000000;
+    --bg-card: rgba(255, 255, 255, 0.03);
+    --text-pure: #ffffff;
+    --text-muted: #9ca3af;
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+*::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari and Opera */
+}
+
+body {
+    font-family: "Space Grotesk", sans-serif;
+    background-color: var(--bg-dark);
+    color: white;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Page Transitions */
+.main-hide {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.95);
+}
+
+.main-show {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-wrapper {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
