@@ -9,7 +9,9 @@ from dotenv import load_dotenv
 from django.contrib.auth.hashers import make_password, check_password
 
 # Load environment variables
-load_dotenv()
+from pathlib import Path
+ENV_PATH = Path(__file__).resolve().parent.parent / '.env'
+load_dotenv(dotenv_path=ENV_PATH, override=True)
 
 from .utils_gemini import generate_tryon_image
 
@@ -41,11 +43,14 @@ def index(request):
         
     db = get_db()
     db_status = "Disconnected"
+    db_connected = False
     if db is not None:
         db_status = getattr(db, 'status', 'Connected')
+        db_connected = True
         
     return render(request, 'core/index.html', {
         'db_status': db_status,
+        'db_connected': db_connected,
         'clear_stale_session': True
     })
 

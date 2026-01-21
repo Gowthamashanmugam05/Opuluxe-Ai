@@ -46,14 +46,21 @@ function startNewChat() {
     localStorage.removeItem('lastChatSessionId');
     filePreview.style.display = 'none'; fileInput.value = ''; input.value = ''; input.style.height = 'auto'; sendBtn.disabled = true;
     chatRoot.innerHTML = `
-        <div id="welcome" style="margin-top: 20vh; text-align: center;">
-            <div style="width:72px; height:72px; background:var(--bg-glass); border-radius:20px; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); box-shadow:var(--shadow-float); overflow: hidden;">
+        <div id="welcome" style="margin-top: 15vh; text-align: center; max-width: 600px; margin-inline: auto;">
+            <div class="welcome-icon-wrapper" style="width:100px; height:100px; background:var(--bg-glass); border-radius:30px; margin:0 auto 32px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); box-shadow:var(--shadow-float); overflow: hidden; position: relative;">
                 <img src="/static/core/images/company_icon.png" alt="Icon" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position:absolute; inset:0; background:linear-gradient(45deg, rgba(255,255,255,0.1), transparent);"></div>
             </div>
-            <h1>OPULUXE AI</h1>
-            <p style="color:var(--text-muted)">Voice to Text Conversion Active</p>
+            <h1 data-t="app_name" style="font-family: var(--font-brand); font-size: 2.5rem; letter-spacing: 0.15em; margin-bottom: 12px; color: var(--text-main);">OPULUXE AI</h1>
+            <p data-t="welcome_desc" style="color:var(--text-muted); font-size: 1.1rem; max-width: 400px; margin: 0 auto 40px; line-height: 1.6;">AI-powered virtual personal shopping assistant.</p>
+            
+            <div class="welcome-actions" style="display: flex; gap: 12px; justify-content: center;">
+                <button class="chip" onclick="setInput('What are the latest fashion trends?')"><i class="ri-sparkling-2-line"></i> Latest Trends</button>
+                <button class="chip" onclick="setInput('Help me find a formal outfit')"><i class="ri-shirt-line"></i> Formal Style</button>
+            </div>
         </div>`;
-    showToast("New chat started", "ri-chat-new-line");
+    showToast(getT('chat_started'), "ri-chat-new-line");
+    applyTranslations(localStorage.getItem('preferredLang') || 'en');
     if (window.innerWidth <= 768) toggleMobileMenu();
 }
 
@@ -952,254 +959,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- TRANSLATION ENGINE ---
-const translations = {
-    en: {
-        new_chat: "New Chat",
-        history: "HISTORY",
-        search_history: "Search History",
-        adding_persons: "Adding Persons",
-        subscription: "Subscription",
-        settings: "Settings",
-        logout: "Logout",
-        app_name: "OPULUXE AI",
-        welcome_desc: "Welcome to AI-powered virtual personal shopping assistants. Ready for shopping.",
-        general: "General",
-        notifications: "Notifications",
-        personalization: "Personalization",
-        apps_tab: "Apps",
-        data_controls: "Data controls",
-        security: "Security",
-        parental_controls: "Parental controls",
-        account: "Account",
-        theme_cust: "Theme Customization",
-        theme_cust_desc: "Switch between optimized visual looks for the platform.",
-        change_look: "Change Look",
-        language: "Language",
-        language_desc: "Choose your preferred Indian language for the interface.",
-        responses: "Responses",
-        responses_desc: "Get notified when ChatGPT responds to requests that take time, like research or image generation.",
-        group_chats: "Group chats",
-        group_chats_desc: "You'll receive notifications for new messages from group chats.",
-        recommendations: "Recommendations",
-        recommendations_desc: "Stay in the loop on new tools, tips, and features from Opuluxe AI.",
+// translations are now loaded from translations.js
 
-        notif_desc: "Manage your notification preferences here.",
-        pers_desc: "Customize your experience.",
-        apps_desc: "Manage connected applications.",
-        data_desc: "Manage your data and privacy settings.",
-        sec_desc: "Enhance your account security.",
-        par_desc: "Set up parental controls.",
-        acc_desc: "Manage your account settings.",
-        search_chats_place: "Search chats...",
-        chat_input_place: "Type a message or '/'..."
-    },
-    hi: {
-        new_chat: "नई चैट",
-        history: "इतिहास",
-        search_history: "इतिहास खोजें",
-        adding_persons: "लोग जोड़ें",
-        subscription: "सदस्यता",
-        settings: "सेटिंग्स",
-        logout: "लॉगआउट",
-        app_name: "OPULUXE AI",
-        welcome_desc: "AI-संचालित वर्चुअल पर्सनल शॉपिंग सहायकों में आपका स्वागत है। खरीदारी के लिए तैयार।",
-        general: "सामान्य",
-        notifications: "सूचनाएं",
-        personalization: "निजीकरण",
-        apps_tab: "ऐप्स",
-        data_controls: "डेटा नियंत्रण",
-        security: "सुरक्षा",
-        parental_controls: "माता-पिता का नियंत्रण",
-        account: "खाता",
-        theme_cust: "थीम कस्टमाइजेशन",
-        theme_cust_desc: "प्लेटफ़ॉर्म के लिए अनुकूलित विजुअल लुक्स के बीच स्विच करें।",
-        change_look: "लुक बदलें",
-        language: "भाषा",
-        language_desc: "इंटरफ़ेस के लिए अपनी पसंदीदा भारतीय भाषा चुनें।",
-        responses: "प्रतिक्रियाएं",
-        responses_desc: "ChatGPT द्वारा समय लेने वाले अनुरोधों, जैसे शोध या छवि निर्माण, पर उत्तर देने पर सूचना प्राप्त करें।",
-        group_chats: "ग्रुप चैट",
-        group_chats_desc: "आपको ग्रुप चैट से नए संदेशों की सूचनाएं प्राप्त होंगी।",
-        recommendations: "सिफारिशें",
-        recommendations_desc: "Opuluxe AI के नए टूल, युक्तियों और सुविधाओं के बारे में जानकारी रखें।",
-
-        notif_desc: "यहां अपनी अधिसूचना प्राथमिकताएं प्रबंधित करें।",
-        pers_desc: "अपने अनुभव को अनुकूलित करें।",
-        apps_desc: "जुड़े हुए एप्लिकेशन प्रबंधित करें।",
-        data_desc: "अपने डेटा और गोपनीयता सेटिंग्स प्रबंधित करें।",
-        sec_desc: "अपनी खाता सुरक्षा बढ़ाएँ।",
-        par_desc: "माता-पिता का नियंत्रण सेट करें।",
-        acc_desc: "अपने खाता सेटिंग्स प्रबंधित करें।",
-        search_chats_place: "चैट खोजें...",
-        chat_input_place: "संदेश टाइप करें या '/'..."
-    },
-    ta: {
-        new_chat: "புதிய அரட்டை",
-        history: "வரலாறு",
-        search_history: "வரலாற்றைத் தேடு",
-        adding_persons: "நபர்களைச் சேர்த்தல்",
-        subscription: "சந்தா",
-        settings: "அமைப்புகள்",
-        logout: "வெளியேறு",
-        app_name: "OPULUXE AI",
-        welcome_desc: "AI-இயங்கும் விர்ச்சுவல் ஷாப்பிங் உதவியாளர்களுக்கு உங்களை வரவேற்கிறோம். ஷாப்பிங்கிற்கு தயாரா?",
-        general: "பொதுவானவை",
-        notifications: "அறிவிப்புகள்",
-        personalization: "தனிப்பயனாக்கம்",
-        apps_tab: "பயன்பாடுகள்",
-        data_controls: "தரவு கட்டுப்பாடுகள்",
-        security: "பாதுகாப்பு",
-        parental_controls: "பெற்றோர் கட்டுப்பாடுகள்",
-        account: "கணக்கு",
-        theme_cust: "தீம் தனிப்பயனாக்கம்",
-        theme_cust_desc: "தளத்திற்கான மேம்படுத்தப்பட்ட காட்சி தோற்றங்களுக்கு இடையில் மாறவும்.",
-        change_look: "தோற்றத்தை மாற்றவும்",
-        language: "மொழி",
-        language_desc: "இடைமுகத்திற்கு உங்களுக்கு விருப்பமான இந்திய மொழியைத் தேர்ந்தெடுக்கவும்.",
-        responses: "பதில்கள்",
-        responses_desc: "ChatGPT ஆராய்ச்சி அல்லது பட உருவாக்கம் போன்ற நேரம் எடுக்கும் கோரிக்கைகளுக்கு பதிலளிக்கும் போது அறிவிப்பைப் பெறுங்கள்.",
-        group_chats: "குழு அரட்டைகள்",
-        group_chats_desc: "குழு அரட்டைகளில் இருந்து புதிய செய்திகளுக்கான அறிவிப்புகளைப் பெறுவீர்கள்.",
-        recommendations: "ಶಿಫಾರಸುಗಳು",
-        recommendations_desc: "Opuluxe AI வழங்கும் ಹೊಸ ಟೂಲ್‌ಗಳು, ಸಲಹೆಗಳು ಮತ್ತು ವೈಶಿಷ್ಟ್ಯಗಳ ಕುರಿತು ಅಪ್‌ಡೇಟ್ ಆಗಿರಿ.",
-
-        notif_desc: "உங்கள் அறிவிப்பு விருப்பங்களை இங்கே நிர்வகிக்கவும்.",
-        pers_desc: "உங்கள் அனுபவத்தைத் தனிப்பயனாக்கவும்.",
-        apps_desc: "இணைக்கப்பட்ட பயன்பாடுகளை நிர்வகிக்கவும்.",
-        data_desc: "உங்கள் தரவு மற்றும் தனியுரிமை அமைப்புகளை நிர்வகிக்கவும்.",
-        sec_desc: "உங்கள் கணக்கு பாதுகாப்பை மேம்படுத்தவும்.",
-        par_desc: "பெற்றோர் கட்டுப்பாடுகளை அமைக்கவும்.",
-        acc_desc: "உங்கள் கணக்கு அமைப்புகளை நிர்வகிக்கவும்.",
-        search_chats_place: "அரட்டைகளைத் தேடு...",
-        chat_input_place: "செய்தியைத் தட்டச்சு செய்யவும் அல்லது '/'..."
-    },
-    te: {
-        new_chat: "కొత్త చాట్",
-        history: "చరిత్ర",
-        search_history: "చరిత్రను వెతకండి",
-        adding_persons: "వ్యక్తులను జోడించడం",
-        subscription: "చందా",
-        settings: "అమరికలు",
-        logout: "లాగ్ అవుట్",
-        app_name: "OPULUXE AI",
-        welcome_desc: "AI-ఆధారిత వర్చువల్ షాపింగ్ అసిస్టెంట్‌ల ప్రపంచానికి స్వాగతం. షాపింగ్‌కు సిద్ధమా?",
-        general: "సాధారణం",
-        notifications: "నోటిఫికేషన్లు",
-        personalization: "వ్యక్తిగతీకరణ",
-        apps_tab: "యాప్‌లు",
-        data_controls: "డేటా నియంత్రణలు",
-        security: "భద్రత",
-        parental_controls: "తల్లిదండ్రుల నియంత్రణలు",
-        account: "ఖాతా",
-        theme_cust: "థీమ్ అనుకూలీకరణ",
-        theme_cust_desc: "ప్లాట్‌ఫారమ్ కోసం ఆప్టిమైజ్ చేయబడిన విజువల్స్ మధ్య మారండి.",
-        change_look: "లుక్ మార్చండి",
-        language: "భాష",
-        language_desc: "ఇంటర్‌ఫేస్ కోసం మీకు నచ్చిన భారతీయ భాషను ఎంచుకోండి.",
-        responses: "ప్రతిస్పందనలు",
-        responses_desc: "పరిశోధన లేదా చిత్ర సృష్టి వంటి సమయం తీసుకునే అభ్యర్థనలకు ChatGPT ప్రతిస్పందించినప్పుడు నోటిఫికేషన్ పొందండి.",
-        group_chats: "గ్రూప్ చాట్‌లు",
-        group_chats_desc: "మీరు గ్రూప్ చాట్‌ల నుండి కొత్త సందేశాల కోసం నోటిఫికేషన్‌లను అందుకుంటారు.",
-        recommendations: "సిఫార్సులు",
-        recommendations_desc: "Opuluxe AI నుండి కొత్త సాధనాలు, చిట్కాలు మరియు ఫీచర్ల గురించి ఎప్పటికప్పుడు తెలుసుకోండి.",
-
-        notif_desc: "మీ నోటిఫికేషన్ ప్రాధాన్యతలను ఇక్కడ నిర్వహించండి.",
-        pers_desc: "మీ అనుభవాన్ని అనుకూలీకరించుకోండి.",
-        apps_desc: "కనెక్ట్ చేయబడిన యాప్‌లను నిర్వహించండి.",
-        data_desc: "మీ డేటా మరియు గోప్యతా సెట్టింగ్‌లను నిర్వహించండి.",
-        sec_desc: "మీ ఖాతా భద్రతను మెరుగుపరచండి.",
-        par_desc: "తల్లిదండ్రుల నియంత్రణలను సెటప్ చేయండి.",
-        acc_desc: "మీ ఖాతా సెట్టింగ్‌లను నిర్వహించండి.",
-        search_chats_place: "చాట్‌లను వెతకండి...",
-        chat_input_place: "సందేశాన్ని టైప్ చేయండి లేదా '/'..."
-    },
-    kn: {
-        new_chat: "ಹೊಸ ಚಾಟ್",
-        history: "ಇತಿಹಾಸ",
-        search_history: "ಇತಿಹಾಸ ಹುಡುಕಿ",
-        adding_persons: "ವ್ಯಕ್ತಿಗಳನ್ನು ಸೇರಿಸುವುದು",
-        subscription: "ಚಂದಾದಾರಿಕೆ",
-        settings: "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
-        logout: "ಲಾಗ್ ಔಟ್",
-        app_name: "OPULUXE AI",
-        welcome_desc: "AI-ಚಾಲಿತ ವರ್ಚುವಲ್ ಶಾಪಿಂಗ್ ಸಹಾಯಕರಿಗೆ ಸುಸ್ವಾಗತ. ಶಾಪಿಂಗ್‌ಗೆ ಸಿದ್ಧರಿದ್ದೀರಾ?",
-        general: "ಸಾಮಾನ್ಯ",
-        notifications: "ಅಧಿಸೂಚನೆಗಳು",
-        personalization: "ವೈಯಕ್ತೀಕರಣ",
-        apps_tab: "ಅಪ್ಲಿಕೇಶನ್‌ಗಳು",
-        data_controls: "ಡೇಟಾ ನಿಯಂತ್ರಣಗಳು",
-        security: "ಭದ್ರತೆ",
-        parental_controls: "ಪೋಷಕರ ನಿಯಂತ್ರಣಗಳು",
-        account: "ಖಾತೆ",
-        theme_cust: "ಥೀಮ್ ಕಸ್ಟಮೈಸೇಶನ್",
-        theme_cust_desc: "ಪ್ಲಾಟ್‌ಫಾರ್ಮ್‌ಗಾಗಿ ಆಪ್ಟಿಮೈಸ್ ಮಾಡಿದ ದೃಶ್ಯ ನೋಟಗಳ ನಡುವೆ ಬದಲಿಸಿ.",
-        change_look: "ನೋಟ ಬದಲಿಸಿ",
-        language: "ಭಾಷೆ",
-        language_desc: "ಇಂಟರ್ಫೇಸ್‌ಗಾಗಿ ನಿಮ್ಮ ಆದ್ಯತೆಯ ಭಾರತೀಯ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
-        responses: "ಪ್ರತಿಕ್ರಿಯೆಗಳು",
-        responses_desc: "ಸಂಶೋಧನೆ ಅಥವಾ ಚಿತ್ರ ರಚನೆಯಂತಹ ಸಮಯ ತೆಗೆದುಕೊಳ್ಳುವ ವಿನಂತಿಗಳಿಗೆ ChatGPT ಪ್ರತಿಕ್ರಿಯಿಸಿದಾಗ ಅಧಿಸೂಚನೆ ಪಡೆಯಿರಿ.",
-        group_chats: "ಗುಂಪು ಚಾಟ್‌ಗಳು",
-        group_chats_desc: "ಗುಂಪು ಚಾಟ್‌ಗಳಿಂದ ಹೊಸ ಸಂದೇಶಗಳಿಗಾಗಿ ನೀವು ಅಧಿಸೂಚನೆಗಳನ್ನು ಸ್ವೀಕರಿಸುತ್ತೀರಿ.",
-        recommendations: "ಶಿಫಾರಸುಗಳು",
-        recommendations_desc: "Opuluxe AI ನಿಂದ ಹೊಸ ಪರಿಕರಗಳು, ಸಲಹೆಗಳು ಮತ್ತು ವೈಶಿಷ್ಟ್ಯಗಳ ಕುರಿತು ಲೂಪ್‌ನಲ್ಲಿರಿ.",
-
-        notif_desc: "ನಿಮ್ಮ ಅಧಿಸೂಚನೆ ಪ್ರಾಧಾನ್ಯತೆಗಳನ್ನು ಇಲ್ಲಿ ನಿರ್ವಹಿಸಿ.",
-        pers_desc: "ನಿಮ್ಮ ಅನುಭವವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ.",
-        apps_desc: "ಸಂಪರ್ಕಿತ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ.",
-        data_desc: "ನಿಮ್ಮ ಡೇಟಾ ಮತ್ತು ಗೌಪ್ಯತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ.",
-        sec_desc: "ನಿಮ್ಮ ಖಾತೆಯ ಭದ್ರತೆಯನ್ನು ಹೆಚ್ಚಿಸಿ.",
-        par_desc: "ಪೋಷಕರ ನಿಯಂತ್ರಣಗಳನ್ನು ಹೊಂದಿಸಿ.",
-        acc_desc: "ನಿಮ್ಮ ಖಾತೆಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ.",
-        search_chats_place: "ಚಾಟ್‌ಗಳನ್ನು ಹುಡುಕಿ...",
-        chat_input_place: "ಸಂದೇಶ ಟೈಪ್ ಮಾಡಿ ಅಥವಾ '/'..."
-    },
-    ml: {
-        new_chat: "പുതിയ ചാറ്റ്",
-        history: "ചരിത്രം",
-        search_history: "ചരിത്രം തിരയുക",
-        adding_persons: "വ്യക്തികളെ ചേർക്കുക",
-        subscription: "സബ്സ്ക്രിപ്ഷൻ",
-        settings: "ക്രമീകരണങ്ങൾ",
-        logout: "ലോഗ് ഔട്ട്",
-        app_name: "OPULUXE AI",
-        welcome_desc: "AI-അധിഷ്ഠിത ഷോപ്പിംഗ് അസിസ്റ്റന്റുമാരുടെ ലോകത്തേക്ക് സ്വാഗതം. ഷോപ്പിംഗിന് തയ്യാറാണോ?",
-        general: "പൊതുവായവ",
-        notifications: "അറിയിപ്പുകൾ",
-        personalization: "വ്യക്തിഗതമാക്കൽ",
-        apps_tab: "ആപ്പുകൾ",
-        data_controls: "ഡാറ്റ നിയന്ത്രണങ്ങൾ",
-        security: "സുരക്ഷ",
-        parental_controls: "രക്ഷാകർതൃ നിയന്ത്രണങ്ങൾ",
-        account: "അക്കൗണ്ട്",
-        theme_cust: "തീം ഇഷ്ടാനുസൃതമാക്കൽ",
-        theme_cust_desc: "പ്ലാറ്റ്‌ഫോമിനായുള്ള ഒപ്റ്റിമൈസ് ചെയ്ത വിഷ്വലുകൾക്കിടയിൽ മാറുക.",
-        change_look: "ലുക്ക് മാറ്റുക",
-        language: "ഭാഷ",
-        language_desc: "ഇന്റർഫേസിനായി നിങ്ങളുടെ ഇഷ്ടപ്പെട്ട ഇന്ത്യൻ ഭാഷ തിരഞ്ഞെടുക്കുക.",
-        responses: "പ്രതികരണങ്ങൾ",
-        responses_desc: "ഗവേഷണം അല്ലെങ്കിൽ ഇമേജ് ജനറേഷൻ പോലുള്ള സമയം എടുക്കുന്ന അഭ്യർത്ഥനകളോട് ChatGPT പ്രതികരിക്കുമ്പോൾ അറിയിപ്പ് നേടുക.",
-        group_chats: "ഗ്രൂപ്പ് ചാറ്റുകൾ",
-        group_chats_desc: "ഗ്രൂപ്പ് ചാറ്റുകളിൽ നിന്നുള്ള പുതിയ സന്ദേശങ്ങൾക്കായി നിങ്ങൾക്ക് അറിയിപ്പുകൾ ലഭിക്കും.",
-        recommendations: "ശുപാർശകൾ",
-        recommendations_desc: "Opuluxe AI-ൽ നിന്നുള്ള പുതിയ ടൂളുകൾ, നുറുങ്ങുകൾ, ഫീച്ചറുകൾ എന്നിവയെക്കുറിച്ച് അറിഞ്ഞിരിക്കുക.",
-
-
-        notif_desc: "നിങ്ങളുടെ അറിയിപ്പ് മുൻഗണനകൾ ഇവിടെ മാനേജ് ചെയ്യുക.",
-        pers_desc: "നിങ്ങളുടെ അനുഭവം ഇഷ്ടാനുസൃതമാക്കുക.",
-        apps_desc: "കണക്റ്റുചെയ്‌ത ആപ്പുകൾ മാനേജ് ചെയ്യുക.",
-        data_desc: "നിങ്ങളുടെ ഡാറ്റയും സ്വകാര്യതാ ക്രമീകരണങ്ങളും മാനേജ് ചെയ്യുക.",
-        sec_desc: "നിങ്ങളുടെ അക്കൗണ്ട് സുരക്ഷ മെച്ചപ്പെടുത്തുക.",
-        par_desc: "രക്ഷാകർതൃ നിയന്ത്രണങ്ങൾ സജ്ജമാക്കുക.",
-        acc_desc: "നിങ്ങളുടെ അക്കൗണ്ട് ക്രമീകരണങ്ങൾ മാനേജ് ചെയ്യുക.",
-        search_chats_place: "ചാറ്റുകൾ തിരയുക...",
-        chat_input_place: "സന്ദേശം ടൈപ്പ് ചെയ്യുക അല്ലെങ്കിൽ '/'..."
-    }
-};
+function getT(key) {
+    const lang = localStorage.getItem('preferredLang') || 'en';
+    return (translations[lang] && translations[lang][key]) ? translations[lang][key] : (translations['en'][key] || key);
+}
 
 function changeLanguage(lang) {
     localStorage.setItem('preferredLang', lang);
     applyTranslations(lang);
-    showToast(`Language switched to ${lang.toUpperCase()}`, "ri-translate-2");
+    showToast(getT('lang_switched') + lang.toUpperCase(), "ri-translate-2");
 }
 
 function applyTranslations(lang) {
@@ -1336,7 +1106,7 @@ function deleteChat(id) {
         if (data.success) {
             if (currentSessionId === id) startNewChat();
             loadChatHistory();
-            showToast("Chat deleted", "ri-delete-bin-line");
+            showToast(getT('chat_deleted'), "ri-delete-bin-line");
         }
     });
 }
@@ -1344,7 +1114,7 @@ function deleteChat(id) {
 function shareChat(id) {
     const url = window.location.origin + '/share/' + id;
     navigator.clipboard.writeText(url).then(() => {
-        showToast("Share link copied to clipboard!", "ri-share-line");
+        showToast(getT('link_copied'), "ri-share-line");
     });
 }
 

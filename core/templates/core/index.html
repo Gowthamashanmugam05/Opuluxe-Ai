@@ -18,10 +18,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=8">
-    <link rel="stylesheet" href="{% static 'core/css/intro.css' %}?v=8">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/intro.css' %}">
 
-    <link rel="stylesheet" href="{% static 'core/css/auth.css' %}?v=8">
+    <link rel="stylesheet" href="{% static 'core/css/auth.css' %}">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
@@ -36,8 +36,10 @@
 
     <!-- Status Indicator -->
     <div id="db-status"
-        style="position: fixed; bottom: 10px; right: 10px; font-size: 10px; color: rgba(255,255,255,0.3); z-index: 2000;">
-        DB: {{ db_status }}
+        style="position: fixed; bottom: 20px; right: 20px; font-size: 11px; color: rgba(255,255,255,0.4); z-index: 2000; padding: 6px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; backdrop-filter: blur(10px); letter-spacing: 0.5px; font-weight: 500;">
+        <span
+            style="display:inline-block; width: 6px; height: 6px; border-radius: 50%; background: {% if db_connected %}#4caf50{% else %}#ff4d4d{% endif %}; margin-right: 6px;"></span>
+        SYSTEM: {{ db_status }}
     </div>
 
     <!-- Scripts -->
@@ -48,8 +50,8 @@
         localStorage.removeItem('isLoggedIn');
     </script>
     {% endif %}
-    <script src="{% static 'core/js/intro.js' %}?v=8"></script>
-    <script src="{% static 'core/js/auth.js' %}?v=8"> </script>
+    <script src="{% static 'core/js/intro.js' %}"></script>
+    <script src="{% static 'core/js/auth.js' %}"></script>
 
 </body>
 

@@ -2,8 +2,16 @@ from pymongo import MongoClient
 import certifi
 import sys
 
-# Original URI provided by the user
-MONGO_URI = "mongodb+srv://gowthamashanmugam05_db_user:cheithu@opuluxeai.twdy6ec.mongodb.net/?appName=OpuluxeAi"
+import os
+from dotenv import load_dotenv
+
+from pathlib import Path
+ENV_PATH = Path(__file__).resolve().parent.parent / '.env'
+load_dotenv(dotenv_path=ENV_PATH, override=True)
+
+# Configuration from Environment Variables
+MONGO_URI = os.getenv("MONGODB_URI")
+DB_NAME = os.getenv("MONGODB_DB_NAME", "OpuluxeAi")
 
 _mongo_client = None
 
@@ -16,15 +24,20 @@ def get_db_client():
     if _mongo_client is not None:
         return _mongo_client
         
+    if not MONGO_URI:
+        print("CRITICAL: MONGODB_URI not found in environment variables!")
+        return None
+
     try:
+        print(f"Connecting to MongoDB Atlas... (DB: {DB_NAME})")
         # Use certifi for SSL/TLS certificates and broader timeouts for stability
         _mongo_client = MongoClient(MONGO_URI, 
                              tlsCAFile=certifi.where(),
-                             serverSelectionTimeoutMS=10000,
-                             connectTimeoutMS=10000,
-                             heartbeatFrequencyMS=10000)
+                             serverSelectionTimeoutMS=5000,
+                             connectTimeoutMS=5000)
         # Test connection
         _mongo_client.admin.command('ping')
+        print("MongoDB Atlas: Connection successful!")
         return _mongo_client
     except Exception as e:
         print(f"CRITICAL: Failed to connect to MongoDB Atlas: {e}")
@@ -37,7 +50,7 @@ def get_db():
     """
     client = get_db_client()
     if client is not None:
-        db = client['OpuluxeAi']
+        db = client[DB_NAME]
         db.status = "Connected (Atlas)"
         return db
     return None
