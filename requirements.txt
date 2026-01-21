@@ -198,3 +198,6 @@ Werkzeug==3.0.3
 wrapt==1.17.2
 wsproto==1.2.0
 yarl==1.9.4
+#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
+#0gC5atS6EI_vUCgYIARAAGBASNwF-L9Ir2itdYGiKH8T-bD_dLftCZ6-ubTkNgBSF5OgbhNA8nq_F21vsNx3-MlrLdTyBEUqyeLA
+#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 -- Personal access tokens (classic)
