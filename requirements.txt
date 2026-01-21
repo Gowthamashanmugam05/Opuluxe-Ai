@@ -34,7 +34,7 @@ distro==1.9.0
 Django==5.2.4
 django-allauth==65.10.0
 djangorestframework==3.16.0
-dlib @ file:///C:/Users/HP/Desktop/smartclass/smartclass/dlib-19.22.99-cp310-cp310-win_amd64.whl#sha256=f2181b6724669fb0147c9ebc326d72b94de41bced1812eff5df4b133b5d0b575
+dlib==19.22.99
 dnspython==2.8.0
 ecdsa==0.18.0
 exceptiongroup==1.3.0
@@ -198,6 +198,3 @@ Werkzeug==3.0.3
 wrapt==1.17.2
 wsproto==1.2.0
 yarl==1.9.4
-#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
-#0gC5atS6EI_vUCgYIARAAGBASNwF-L9Ir2itdYGiKH8T-bD_dLftCZ6-ubTkNgBSF5OgbhNA8nq_F21vsNx3-MlrLdTyBEUqyeLA
-#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 -- Personal access tokens (classic)
