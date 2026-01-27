@@ -42,13 +42,11 @@
         if (loginSubmitBtn) {
             loginSubmitBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log("Login Attempt Started");
-
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
 
                 if (!username || !password) {
-                    alert('Please fill in both username and password.');
+                    showAuthToast('Please fill in both fields', '#ff4d4d');
                     return;
                 }
 
@@ -64,16 +62,16 @@
                     .then(data => {
                         if (data.success) {
                             localStorage.setItem('isLoggedIn', 'true');
-                            window.location.href = '/dashboard/';
+                            showAuthToast('Welcome back! Redirecting...', '#4caf50');
+                            setTimeout(() => { window.location.href = '/dashboard/'; }, 800);
                         } else {
-                            alert('Login Failed: ' + (data.error || 'Check credentials'));
+                            showAuthToast(data.error || 'Invalid credentials', '#ff4d4d');
                             loginSubmitBtn.innerHTML = 'Log In';
                             loginSubmitBtn.disabled = false;
                         }
                     })
                     .catch(err => {
-                        console.error('Login Error:', err);
-                        alert('Network Error: Could not connect to authentication server.');
+                        showAuthToast('Network Error', '#ff4d4d');
                         loginSubmitBtn.innerHTML = 'Log In';
                         loginSubmitBtn.disabled = false;
                     });
@@ -84,19 +82,17 @@
         if (signupSubmitBtn) {
             signupSubmitBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log("Signup process initiated...");
-
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('new-password').value;
                 const confirmPassword = document.getElementById('confirm-password').value;
 
                 if (!email || !password || !confirmPassword) {
-                    alert('Please complete all signup fields.');
+                    showAuthToast('All fields required', '#ff4d4d');
                     return;
                 }
 
                 if (password !== confirmPassword) {
-                    alert('Passwords do not match. Please verify.');
+                    showAuthToast('Passwords do not match', '#ff4d4d');
                     return;
                 }
 
@@ -112,20 +108,51 @@
                     .then(data => {
                         if (data.success) {
                             localStorage.setItem('isLoggedIn', 'true');
-                            window.location.href = '/dashboard/';
+                            showAuthToast('Account created! Entering...', '#4caf50');
+                            setTimeout(() => { window.location.href = '/dashboard/'; }, 800);
                         } else {
-                            alert('Signup Error: ' + (data.error || 'Server rejected the request'));
+                            showAuthToast(data.error || 'Signup failed', '#ff4d4d');
                             signupSubmitBtn.innerHTML = 'Sign Up';
                             signupSubmitBtn.disabled = false;
                         }
                     })
                     .catch(err => {
-                        console.error('Signup Failure:', err);
-                        alert('Check your internet connection and try again.');
+                        showAuthToast('Network Error', '#ff4d4d');
                         signupSubmitBtn.innerHTML = 'Sign Up';
                         signupSubmitBtn.disabled = false;
                     });
             });
+        }
+    };
+
+    window.showAuthToast = (msg, color) => {
+        const toast = document.getElementById('auth-toast');
+        const toastMsg = document.getElementById('auth-toast-msg');
+        if (toast && toastMsg) {
+            toastMsg.innerText = msg;
+            toast.style.borderColor = color;
+            toast.style.opacity = '1';
+            toast.style.visibility = 'visible';
+            toast.style.transform = 'translateX(-50%) translateY(-10px)';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.visibility = 'hidden';
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+            }, 3000);
+        }
+    };
+
+    window.togglePasswordVisibility = (id) => {
+        const field = document.getElementById(id);
+        const icon = field.nextElementSibling;
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            field.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
         }
     };
 

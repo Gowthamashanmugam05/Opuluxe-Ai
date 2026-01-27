@@ -82,15 +82,16 @@
             <i class="ri-menu-line"></i>
         </button>
 
-        <img src="{% static 'core/images/company_logo.png' %}?v=2" alt="Company Logo" class="dashboard-logo">
+        <img src="{% static 'core/images/company_logo.png' %}?v=2" alt="Opuluxe Logo" class="dashboard-logo"
+            fetchpriority="high">
 
         <div class="chat-scroll-area" id="scroll-container">
             <div class="chat-container" id="chat-root">
                 <div id="welcome" style="margin-top: 10vh; text-align: center;">
                     <div
                         style="width:72px; height:72px; background:var(--bg-glass); border-radius:20px; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); box-shadow:var(--shadow-float); overflow: hidden;">
-                        <img src="{% static 'core/images/company_icon.png' %}" alt="Icon"
-                            style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="{% static 'core/images/company_icon.png' %}" alt="Opuluxe Icon"
+                            style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
                     </div>
                     <h1 data-t="app_name">OPULUXE AI</h1>
                     <p style="color:var(--text-muted)" data-t="welcome_desc">Welcome to AI-powered virtual personal

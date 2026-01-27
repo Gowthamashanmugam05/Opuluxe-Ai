@@ -31,6 +31,26 @@
 
     --spring: cubic-bezier(0.19, 1, 0.22, 1);
     --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --animation-skeleton: skeleton-loading 1.5s infinite alternate;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        opacity: 0.5;
+        background: var(--bg-user-bubble);
+    }
+
+    100% {
+        opacity: 0.8;
+        background: var(--border);
+    }
+}
+
+.skeleton {
+    animation: var(--animation-skeleton);
+    border-radius: 8px;
+    height: 38px;
+    margin: 8px 14px;
 }
 
 /* LOOK 2: CYBERPUNK */
@@ -144,7 +164,8 @@ body {
     height: 100vh;
     display: flex;
     overflow: hidden;
-    transition: background 0.6s var(--ease), color 0.6s var(--ease);
+    transition: background 0.3s var(--ease), color 0.3s var(--ease);
+    scroll-behavior: smooth;
 }
 
 /* =========================================
@@ -1932,16 +1953,16 @@ input:checked+.slider:before {
 }
 
 .product-shop-pill {
-    background: rgba(255, 255, 255, 0.05);
+    background: #000000;
     color: #ffffff;
-    border-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.9);
 }
 
 .product-shop-pill:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: #111111;
     transform: translateY(-2px);
-    border-color: var(--accent);
-    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+    border-color: #ffffff;
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
 }
 
 @keyframes magicPulse {

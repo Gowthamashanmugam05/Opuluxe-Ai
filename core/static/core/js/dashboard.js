@@ -126,7 +126,7 @@ function sendMessage() {
                 if (data.session_id) currentSessionId = data.session_id;
                 chatHistory.push({ role: 'assistant', text: data.reply });
                 streamReply(data.reply);
-                loadChatHistory(); // Refresh sidebar to show new/updated session
+                loadChatHistory(false); // Silent refresh
             } else if (!data.success) {
                 if (data.error === "Not logged in") {
                     window.location.href = '/';
@@ -238,65 +238,117 @@ function streamReply(text) {
 function injectTryOnButtons(container) {
     if (!container) return;
 
-    container.querySelectorAll('li, p').forEach(el => {
+    const items = container.querySelectorAll('li, p');
+    let lastProductFound = null;
+
+    items.forEach((el, index) => {
         const strongs = el.querySelectorAll('strong');
-        let productFound = null;
+        let currentItemProduct = null;
 
         strongs.forEach(s => {
             const itemName = s.innerText.trim();
             const parentText = el.innerText.trim();
 
-            // Check if it's likely a product (at start of line or following a number)
-            const isAtStart = parentText.startsWith(itemName) ||
-                parentText.match(new RegExp(`^\\d+\\.\\s*${itemName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
+            // Enhance detection logic for various AI formats
+            // Matches:
+            // 1. "1. Product Name"
+            // 2. "Product Name - Description"
+            // 3. "Product Name: Description"
 
-            const filterWords = ['fabric', 'style', 'fit', 'material', 'detail', 'type', 'occasion', 'season', 'price', 'brand', 'color', 'look', 'note', 'option'];
+            const isProductMatch =
+                parentText.startsWith(itemName) ||
+                parentText.match(new RegExp(`^\\d+[.\\s]+${itemName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`)) ||
+                parentText.match(new RegExp(`^${itemName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[-:]`)) ||
+                // Fallback: if the bold text is the first thing in the line (ignoring numbers/bullets)
+                parentText.replace(/^\d+[.\s]+/, '').replace(/^[-•]\s*/, '').startsWith(itemName);
+
+            const filterWords = ['fabric', 'style', 'fit', 'material', 'detail', 'type', 'occasion', 'season', 'price', 'brand', 'color', 'look', 'note', 'option', 'specification', 'features', 'key features'];
             const isFiltered = filterWords.includes(itemName.toLowerCase()) || itemName.includes(':');
 
-            if (itemName.length > 3 && !isFiltered && isAtStart) {
-                productFound = itemName;
+            if (itemName.length > 3 && !isFiltered && isProductMatch) {
+                currentItemProduct = itemName;
             }
         });
 
-        if (productFound) {
-            // Create a clean Action Group at the end of the element
+        if (currentItemProduct) {
+            lastProductFound = currentItemProduct;
+        }
+
+        // Determine if we should append buttons to THIS element
+        // We append to the last element of the block (e.g. after price/reviews)
+        const nextEl = items[index + 1];
+        let isEndOfBlock = false;
+
+        if (lastProductFound) {
+            if (!nextEl) {
+                isEndOfBlock = true;
+            } else {
+                // If next line starts a new product, this is the end of the current block
+                const nextStrongs = nextEl.querySelectorAll('strong');
+                let nextIsProduct = false;
+                nextStrongs.forEach(ns => {
+                    const nName = ns.innerText.trim();
+                    const nText = nextEl.innerText.trim();
+                    if (nName.length > 3 && (nText.startsWith(nName) || nText.match(/^\d+[.\s]+/))) {
+                        nextIsProduct = true;
+                    }
+                });
+                if (nextIsProduct) isEndOfBlock = true;
+            }
+        }
+
+        if (isEndOfBlock && lastProductFound) {
             const actionGroup = document.createElement('div');
             actionGroup.className = 'product-action-bar';
+
+            const prodName = lastProductFound;
 
             // Magic Try-On Button
             const tryOnBtn = document.createElement('button');
             tryOnBtn.className = 'magic-tryon-pill';
-            tryOnBtn.innerHTML = '<i class="ri-magic-line"></i> Magic Try-On';
-            tryOnBtn.onclick = () => tryOnOutfit(productFound);
+            tryOnBtn.innerHTML = '<i class="ri-magic-line"></i> MAGIC TRY-ON';
+            tryOnBtn.onclick = () => tryOnOutfit(prodName);
 
             // Shopping Link Button
             const shopBtn = document.createElement('button');
             shopBtn.className = 'product-shop-pill';
-            shopBtn.innerHTML = '<i class="ri-shopping-bag-line"></i> Shop Now';
+            shopBtn.type = 'button';
+
+            const platform = selectedPlatforms.length > 0 ? selectedPlatforms[0] : 'Myntra';
+            let iconClass = 'ri-shopping-bag-3-line';
+            if (platform.toLowerCase().includes('amazon')) iconClass = 'ri-amazon-line';
+            if (platform.toLowerCase().includes('myntra')) iconClass = 'ri-handbag-line'; // Fashion-specific bag
+            if (platform.toLowerCase().includes('flipkart')) iconClass = 'ri-shopping-cart-2-line';
+
+            shopBtn.innerHTML = `<i class="${iconClass}"></i> SHOP NOW`;
             shopBtn.onclick = (e) => {
                 e.stopPropagation();
-                const platform = selectedPlatforms.length > 0 ? selectedPlatforms[0] : 'Google';
-                window.open(getProductUrl(productFound, platform), '_blank');
+                const url = generateProductPlatformUrl(prodName, platform);
+                window.location.href = url;
             };
 
             actionGroup.appendChild(tryOnBtn);
             actionGroup.appendChild(shopBtn);
             el.appendChild(actionGroup);
+
+            lastProductFound = null; // Handled
         }
     });
 }
 
-function getProductUrl(itemName, platform) {
+function generateProductPlatformUrl(itemName, platform) {
     const rawQuery = itemName.trim();
     const queryEncoded = encodeURIComponent(rawQuery);
-    const queryDashed = rawQuery.replace(/\s+/g, '-').toLowerCase();
 
+    // For Myntra and some others, search URLs often work better than direct slugs
     const p = platform.toLowerCase();
-    if (p.includes('myntra')) return `https://www.myntra.com/${queryDashed}`;
+    if (p.includes('myntra')) return `https://www.myntra.com/search?q=${queryEncoded}`;
     if (p.includes('ajio')) return `https://www.ajio.com/search/?text=${queryEncoded}`;
     if (p.includes('amazon')) return `https://www.amazon.in/s?k=${queryEncoded}`;
     if (p.includes('flipkart')) return `https://www.flipkart.com/search?q=${queryEncoded}`;
     if (p.includes('tata')) return `https://www.tatacliq.com/search/?text=${queryEncoded}`;
+
+    // Default to Google Shopping
     return `https://www.google.com/search?tbm=shop&q=${queryEncoded}`;
 }
 
@@ -342,7 +394,7 @@ function tryOnOutfit(itemName) {
                 
                 <div style="margin-top:30px; display:flex; gap:12px; justify-content:center;">
                     <button class="setting-btn" style="background:rgba(255,255,255,0.05); border:1px solid var(--border);" onclick="showToast('Style Saved', 'ri-bookmark-line')"><i class="ri-bookmark-line"></i> Save Outfit</button>
-                    <button class="setting-btn" onclick="window.open(window.getProductUrl('${itemName.replace(/'/g, "\\'")}'), '_blank')">Buy this Look</button>
+                    <button class="setting-btn" onclick="window.location.href = window.getProductUrl('${itemName.replace(/'/g, "\\'")}');">Buy this Look</button>
                 </div>
             </div>
         </div>
@@ -1008,7 +1060,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyTranslations(savedLang);
 
     // Load Chat History
-    loadChatHistory();
+    loadChatHistory(true);
 
     // Auto-load last active session
     const lastSessionId = localStorage.getItem('lastChatSessionId');
@@ -1017,7 +1069,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function loadChatHistory() {
+function loadChatHistory(showSkeletons = false) {
+    const historyList = document.getElementById('chat-history-list');
+    if (!historyList) return;
+
+    if (showSkeletons) {
+        historyList.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+    }
+
     fetch('/api/chat-history/')
         .then(res => res.json())
         .then(data => {
@@ -1091,7 +1150,7 @@ function openSession(sessionId) {
                 document.querySelectorAll('.history-item').forEach(item => {
                     item.classList.remove('active');
                 });
-                loadChatHistory();
+                loadChatHistory(false); // Silent refresh
             }
         });
 }
@@ -1129,9 +1188,28 @@ function scrollToMessage(id) {
 
 // Exposed globally for onclick handlers
 function logout() {
-    localStorage.removeItem('isLoggedIn');
-    // Also call server-side logout if needed, but for now just redirect
-    window.location.href = '/';
+    // Call backend logout API to clear session
+    fetch('/api/logout/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+        .then(res => res.json())
+        .then(data => {
+            // Clear local storage
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('lastChatSessionId');
+            localStorage.removeItem('user_profiles');
+            localStorage.removeItem('selectedPlatforms');
+
+            // Redirect to login page
+            window.location.href = '/';
+        })
+        .catch(err => {
+            console.error('Logout error:', err);
+            // Even if API fails, clear local data and redirect
+            localStorage.clear();
+            window.location.href = '/';
+        });
 }
 
 window.logout = logout;
@@ -1228,7 +1306,7 @@ window.toggleHistoryMenu = toggleHistoryMenu;
 window.openSession = openSession;
 window.deleteChat = deleteChat;
 window.getProductUrl = (name) => {
-    const platform = selectedPlatforms.length > 0 ? selectedPlatforms[0] : 'Google';
-    return getProductUrl(name, platform);
+    const platform = (typeof selectedPlatforms !== 'undefined' && selectedPlatforms.length > 0) ? selectedPlatforms[0] : 'Myntra';
+    return generateProductPlatformUrl(name, platform);
 };
 window.shareChat = shareChat;

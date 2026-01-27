@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Time to show the intro screen before fading out
-    const introDuration = 1800;
+    const introDuration = 1000;
 
     setTimeout(() => {
         if (introScreen) {
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             setTimeout(() => {
                 introScreen.style.display = 'none';
-            }, 800);
+            }, 400);
         }
 
         mainContentElements.forEach(el => {
