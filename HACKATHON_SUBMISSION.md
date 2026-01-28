@@ -201,7 +201,6 @@ tryon_image = client.models.generate_images(
 
 ## 🔗 Links
 
-- **Live Demo:** https://opuluxe-ai.onrender.com
 - **Code Repository:** https://github.com/Gowthamashanmugam05/Opuluxe-Ai
 - **Demo Video:** [YouTube link - to be created]
 

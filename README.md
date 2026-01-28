@@ -3,7 +3,6 @@
 [![Gemini 3 Hackathon](https://img.shields.io/badge/Gemini%203-Hackathon-blue)](https://gemini3.devpost.com)
 [![Django](https://img.shields.io/badge/Django-5.2.4-green)](https://www.djangoproject.com/)
 [![Gemini 3 Pro](https://img.shields.io/badge/Gemini-3%20Pro-orange)](https://ai.google.dev/)
-[![Render](https://img.shields.io/badge/Render-Deployed-purple)](https://opuluxe-ai.onrender.com)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellow)](LICENSE)
 
 > **Revolutionizing online fashion shopping with Gemini 3's advanced AI capabilities & Model Context Protocol**
