@@ -20,13 +20,13 @@ Our innovative virtual try-on feature uses **Gemini 3 Pro** for advanced image a
 
 This detailed analysis is then used with **Imagen 3.0** to generate photorealistic previews of users wearing recommended clothing items while preserving their original pose and characteristics.
 
-### 3. **Multimodal Fashion Analysis**
-Users can upload images of outfits, and **Gemini 3 Pro's** enhanced vision capabilities provide detailed style analysis, suggesting complementary pieces, identifying brands, and offering styling tips.
+### 3. **Real-Time Trends with MCP**
+Opuluxe AI uses the **Model Context Protocol (MCP)** to fetch live fashion trend data. This allows Gemini to provide advice based on *current* market trends (e.g., "What's trending in Summer 2026?"), overcoming the knowledge cutoff of static models.
 
-**Key Gemini 3 Features Used:**
+**Key Gemini + MCP + Imagen Features:**
 - ✅ Enhanced reasoning for personalized recommendations
 - ✅ Superior multimodal understanding (text + images)
-- ✅ Larger context window for conversation history
+- ✅ **Real-time trend awareness via MCP**
 - ✅ Advanced image analysis capabilities
 - ✅ Integration with Imagen 3 for image generation
 
@@ -44,21 +44,21 @@ Online fashion shopping suffers from:
 
 ## 💡 Solution
 
-Opuluxe AI combines **Gemini 3 Pro's** advanced AI capabilities with a comprehensive fashion platform that:
+Opuluxe AI combines **Gemini 2.5 Flash**, **Imagen 3**, and **MCP** to create a triple-threat fashion platform that:
 
-1. **Personalizes** recommendations based on detailed user profiles (measurements, fit preferences, style)
+1. **Personalizes** recommendations based on detailed user profiles
 2. **Visualizes** outfits on users through AI-powered virtual try-on
-3. **Guides** shopping decisions with intelligent, context-aware fashion advice
-4. **Integrates** with major e-commerce platforms (Myntra, Amazon, Flipkart, etc.)
+3. **Updates** advice with real-time fashion trends via MCP
+4. **Guides** shopping decisions with intelligent, context-aware advice
 
 ---
 
 ## 🚀 Key Features
 
-### 1. **Gemini 3-Powered Fashion Consultant**
+### 1. **Gemini-Powered Fashion Consultant**
 - Real-time chat interface with premium dark mode UI
 - Multimodal input (text + images)
-- Personalized advice based on user profiles
+- **Real-time trend data integration (MCP)**
 - Multi-language support (English, Hindi, Tamil, Telugu, etc.)
 - Shopping platform integration
 
@@ -66,25 +66,19 @@ Opuluxe AI combines **Gemini 3 Pro's** advanced AI capabilities with a comprehen
 - Upload your photo
 - Select recommended clothing items
 - See AI-generated preview of you wearing the outfit
-- Powered by Gemini 3 Pro analysis + Imagen 3 generation
+- Powered by Gemini analysis + Imagen 3 generation
 
-### 3. **Custom Profile Management**
+### 3. **Model Context Protocol (MCP) Integration**
+- **Live Trend Data from Fashion Trends Server**
+- Fetches latest styles for Men/Women/Accessories
+- Provides seasonal recommendations and occasion-based tips
+- Extensible architecture for future data sources
+
+### 4. **Custom Profile Management**
 - Save multiple profiles (family members, friends)
 - Detailed measurements (chest, waist, hips, inseam, etc.)
 - Fit preferences (slim, regular, relaxed)
 - Photo storage for personalized try-on
-
-### 4. **Smart Shopping Integration**
-- Direct links to products on preferred platforms
-- Budget-aware recommendations
-- Brand preference tracking
-- Platform selection (Myntra, Amazon, Flipkart, Ajio, Tata Cliq)
-
-### 5. **Conversation History**
-- Persistent chat sessions
-- MongoDB Atlas backend
-- Session management
-- Profile-based recommendations
 
 ---
 
@@ -99,37 +93,27 @@ Opuluxe AI combines **Gemini 3 Pro's** advanced AI capabilities with a comprehen
 ### **Backend**
 - **Django 5.2.4** - Python web framework
 - **MongoDB Atlas** - Cloud database for users, profiles, and chat history
-- **Google Gemini 3 Pro API** - AI fashion consultant and image analysis
+- **Google Gemini 2.5 Flash API** - AI fashion consultant
 - **Google Imagen 3.0 API** - Photorealistic image generation
+- **MCP Python SDK** - Live data integration
 
-### **AI Integration**
+### **AI Integration Code**
 ```python
-# Gemini 3 Pro for Fashion Consulting
-client.models.generate_content(
-    model='gemini-3-pro',
-    contents=contents,
-    config=types.GenerateContentConfig(
-        system_instruction=fashion_expert_prompt,
-        temperature=0.7,
-        max_output_tokens=2048
-    )
+# MCP Client fetches real-time trends
+trends = mcp_client.get_fashion_trends(category="women")
+
+# Gemini receives enhanced context
+response = client.models.generate_content(
+    model='gemini-2.5-flash',
+    contents=[f"User Query: {query}\nContext: {trends}"],
+    config=types.GenerateContentConfig(...)
 )
 
-# Gemini 3 Pro for Image Analysis
-analysis_response = client.models.generate_content(
-    model='gemini-3-pro',
-    contents=[image_bytes, analysis_prompt]
-)
-
-# Imagen 3 for Virtual Try-On
-response = client.models.generate_images(
+# Imagen 3 generates try-on
+tryon_image = client.models.generate_images(
     model='imagen-3.0-generate-001',
     prompt=generation_prompt,
-    config=types.GenerateImagesConfig(
-        number_of_images=1,
-        person_generation="allow_adult",
-        aspect_ratio="3:4"
-    )
+    ...
 )
 ```
 
@@ -139,8 +123,8 @@ response = client.models.generate_images(
 
 1. **Sign Up/Login** - Secure authentication with MongoDB
 2. **Create Profile** - Add measurements, photos, and preferences
-3. **Chat with AI** - Ask fashion questions, upload outfit photos
-4. **Get Recommendations** - Receive personalized product suggestions
+3. **Chat with AI** - Ask detailed fashion questions ("What's trending now?")
+4. **Get Recommendations** - AI uses real-time MCP data to suggest items
 5. **Virtual Try-On** - See how clothes look on you with AI
 6. **Shop** - Direct links to purchase on preferred platforms
 
@@ -150,30 +134,23 @@ response = client.models.generate_images(
 
 ### **What Makes This Unique:**
 
-1. **Gemini 3 Pro's Enhanced Reasoning**
-   - Understands complex style preferences
-   - Provides nuanced, context-aware advice
-   - Adapts to user's fashion journey
+1. **Triple-AI Architecture**
+   - Combining **Gemini** (Logic) + **Imagen** (Visuals) + **MCP** (Data)
+   - Creates a complete cognitive loop for fashion
 
-2. **True Virtual Try-On**
+2. **Real-Time Intelligence**
+   - Unlike static AI wrappers, Opuluxe knows *current* trends via MCP.
+   - Dynamic adaptation to seasonal changes.
+
+3. **True Virtual Try-On**
    - Not just overlay - actual AI-generated preview
    - Preserves user's pose and characteristics
    - Photorealistic results with Imagen 3
 
-3. **Comprehensive Personalization**
+4. **Comprehensive Personalization**
    - Detailed measurement profiles
    - Fit preference tracking
    - Budget and platform awareness
-
-4. **Premium User Experience**
-   - Beautiful dark mode interface
-   - Smooth animations and transitions
-   - Multi-language support for Indian market
-
-5. **End-to-End Solution**
-   - From consultation to purchase
-   - Integrated with major e-commerce platforms
-   - Persistent conversation history
 
 ---
 
@@ -190,32 +167,24 @@ response = client.models.generate_images(
 - ✅ **Save time** - 10 minutes vs 2 hours for outfit selection
 - ✅ **Improve satisfaction** - Personalized, AI-powered advice
 
-### **Real-World Applications:**
-- Personal shoppers for busy professionals
-- Fashion advice for special occasions (weddings, interviews)
-- Wardrobe planning and outfit coordination
-- Size and fit guidance for online shopping
-- Style education and trend awareness
-
 ---
 
 ## 🎥 Demo Video Script (3 minutes)
 
 **[0:00-0:30] Introduction**
 - Problem: Online fashion shopping challenges
-- Solution: Opuluxe AI with Gemini 3 Pro
+- Solution: Opuluxe AI with Gemini + MCP
 
-**[0:30-1:00] Feature 1: AI Fashion Consultant**
-- Show chat interface
-- Ask fashion question with image upload
-- Demonstrate Gemini 3's multimodal understanding
-- Show personalized recommendations
+**[0:30-1:00] Feature 1: MCP + AI Fashion Consultant**
+- Ask "What's trending right now?"
+- Show MCP server logs fetching data
+- Show AI response with *current* trend info
+- Demonstrate real-time intelligence
 
 **[1:00-1:45] Feature 2: Magic AI Try-On**
-- Create user profile with photo
 - Select recommended clothing item
-- Show Gemini 3 analyzing the photo
-- Reveal AI-generated try-on preview
+- Click "Magic Try-On"
+- Reveal AI-generated preview of YOU wearing it
 - Compare original vs try-on
 
 **[1:45-2:30] Feature 3: Smart Shopping**
@@ -224,7 +193,7 @@ response = client.models.generate_images(
 - Click "Shop Now" to e-commerce site
 
 **[2:30-3:00] Conclusion**
-- Recap Gemini 3 integration
+- Recap Triple-AI architecture
 - Impact and future vision
 - Call to action
 
@@ -232,7 +201,7 @@ response = client.models.generate_images(
 
 ## 🔗 Links
 
-- **Live Demo:** [Your deployed URL - Firebase/Vercel/etc.]
+- **Live Demo:** https://opuluxe-ai.onrender.com
 - **Code Repository:** https://github.com/Gowthamashanmugam05/Opuluxe-Ai
 - **Demo Video:** [YouTube link - to be created]
 
@@ -250,8 +219,8 @@ python -m venv .venv
 .venv\Scripts\activate  # Windows
 source .venv/bin/activate  # Mac/Linux
 
-# Install dependencies
-pip install django pymongo[srv] python-dotenv google-generativeai certifi
+# Install dependencies (including MCP and Django)
+pip install -r requirements.txt
 
 # Configure environment variables
 # Create .env file with:
@@ -274,13 +243,11 @@ Visit: http://localhost:8000
 
 1. **Sign Up:** Create account with email/password
 2. **Create Profile:** 
-   - Click "Adding Persons" in sidebar
    - Upload photo
    - Enter measurements
-   - Set fit preferences
-3. **Chat Test:**
-   - Ask: "Suggest a morning outfit for an office event"
-   - Upload outfit image for analysis
+3. **MCP Trend Test:**
+   - Ask: "What is trending in men's fashion?"
+   - Verify specific trend data provided
 4. **Try-On Test:**
    - Click "MAGIC TRY-ON" on recommended item
    - View AI-generated preview
@@ -292,11 +259,10 @@ Visit: http://localhost:8000
 ## 🎯 Judging Criteria Alignment
 
 ### **Technical Execution (40%)**
-✅ High-quality Django application with clean architecture
-✅ Proper integration of Gemini 3 Pro API
-✅ Functional code with error handling
-✅ MongoDB Atlas for scalable data storage
-✅ Responsive, premium UI/UX
+✅ **Advanced Architecture**: Integration of **MCP** for real-time data
+✅ **Multimodal AI**: Seamless use of Gemini + Imagen 3
+✅ **Clean Code**: Modular Django structure with separate MCP servers
+✅ **Scalability**: MongoDB Atlas + Cloud Deployment ready
 
 ### **Potential Impact (20%)**
 ✅ Addresses $752B global fashion market
@@ -305,18 +271,16 @@ Visit: http://localhost:8000
 ✅ Measurable impact: Reduced returns, increased conversion
 
 ### **Innovation/Wow Factor (30%)**
-✅ Novel use of Gemini 3 for fashion consulting
-✅ True AI virtual try-on (not just overlay)
-✅ Comprehensive personalization system
-✅ Premium user experience
-✅ Multi-language support for Indian market
+✅ **Triple Tech Stack**: Gemini (Logic) + Imagen (Visuals) + MCP (Data)
+✅ **Novel Integration**: First fashion app to use MCP for trends
+✅ **True Virtual Try-On**: Generative AI, not just overlay
+✅ **Premium UX**: Smooth animations and dark mode
 
 ### **Presentation/Demo (10%)**
 ✅ Clear problem definition
-✅ Effective demo showcasing Gemini 3 integration
+✅ Effective demo showcasing MCP + Gemini integration
 ✅ Detailed documentation
 ✅ Architecture diagram included
-✅ Code repository with README
 
 ---
 

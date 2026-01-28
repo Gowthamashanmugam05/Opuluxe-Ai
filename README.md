@@ -3,9 +3,10 @@
 [![Gemini 3 Hackathon](https://img.shields.io/badge/Gemini%203-Hackathon-blue)](https://gemini3.devpost.com)
 [![Django](https://img.shields.io/badge/Django-5.2.4-green)](https://www.djangoproject.com/)
 [![Gemini 3 Pro](https://img.shields.io/badge/Gemini-3%20Pro-orange)](https://ai.google.dev/)
+[![Render](https://img.shields.io/badge/Render-Deployed-purple)](https://opuluxe-ai.onrender.com)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellow)](LICENSE)
 
-> **Revolutionizing online fashion shopping with Gemini 3 Pro's advanced AI capabilities**
+> **Revolutionizing online fashion shopping with Gemini 3's advanced AI capabilities & Model Context Protocol**
 
 Built for the **Google DeepMind Gemini 3 Hackathon** 🏆
 
@@ -13,14 +14,15 @@ Built for the **Google DeepMind Gemini 3 Hackathon** 🏆
 
 ## 🌟 Overview
 
-Opuluxe AI is an intelligent virtual personal shopping assistant that leverages **Gemini 3 Pro's** enhanced reasoning and multimodal capabilities to provide personalized fashion advice, virtual try-on experiences, and smart shopping recommendations.
+Opuluxe AI is an intelligent virtual personal shopping assistant that leverages **Gemini 2.5 Flash**, **Imagen 3**, and **Model Context Protocol (MCP)** to provide personalized fashion advice, real-time trend analysis, virtual try-on experiences, and smart shopping recommendations.
 
 ### ✨ Key Highlights
 
-- 🤖 **Gemini 3 Pro AI Fashion Consultant** - Deeply personalized style advice with enhanced reasoning
-- 🎭 **Magic AI Try-On** - Photorealistic previews using Gemini 3 + Imagen 3
+- 🤖 **AI Fashion Consultant** - Deeply personalized style advice using Gemini 2.5 Flash
+- 🎭 **Magic AI Try-On** - Photorealistic previews using **Imagen 3** ("Nano Banana")
+- 🔌 **Model Context Protocol (MCP)** - Real-time fashion trend data integration
 - 👤 **Custom Profile Management** - Detailed measurements and fit preferences
-- 🛍️ **Smart Shopping Integration** - Direct links to Myntra, Amazon, Flipkart, etc.
+- 🛍️ **Smart Shopping Integration** - Direct links to Myntra, Amazon, Flipkart
 - 🌐 **Multi-language Support** - English, Hindi, Tamil, Telugu, and more
 - 💬 **Persistent Chat History** - MongoDB-backed conversation storage
 
@@ -35,42 +37,33 @@ Opuluxe AI is an intelligent virtual personal shopping assistant that leverages 
 - **No way to visualize** how clothes will look before purchase
 
 ### Our Solution
-Opuluxe AI combines **Gemini 3 Pro's** advanced capabilities with comprehensive fashion intelligence to:
-1. Provide **personalized recommendations** based on body measurements and style preferences
-2. Generate **AI-powered virtual try-on** previews
-3. Offer **intelligent shopping guidance** with platform integration
+Opuluxe AI combines **Gemini's** advanced capabilities with comprehensive fashion intelligence to:
+1. Provide **personalized recommendations** based on body measurements
+2. Generate **AI-powered virtual try-on** previews with Imagen 3
+3. Offer **real-time trend advice** using MCP
 4. Deliver **context-aware fashion advice** through multimodal understanding
 
 ---
 
-## 🚀 Gemini 3 Integration
+## 🚀 Key Technologies
 
-### 1. **AI Fashion Consultant (Gemini 3 Pro)**
+### 1. **AI Fashion Consultant (Gemini 2.5 Flash)**
 ```python
 response = client.models.generate_content(
-    model='gemini-3-pro',  # Enhanced reasoning & multimodal
+    model='gemini-2.5-flash',  # High-speed multimodal reasoning
     contents=contents,
-    config=types.GenerateContentConfig(
-        system_instruction=fashion_expert_prompt,
-        temperature=0.7,
-        max_output_tokens=2048
-    )
+    config=types.GenerateContentConfig(...)
 )
 ```
-
-**Features:**
-- ✅ Enhanced reasoning for nuanced style advice
+**Capabilities:**
 - ✅ Multimodal input (text + images)
-- ✅ Larger context window for conversation history
-- ✅ Superior understanding of complex fashion queries
+- ✅ Massive context window for conversation history
+- ✅ Complex reasoning for style advice
 
-### 2. **Magic AI Try-On (Gemini 3 Pro + Imagen 3)**
+### 2. **Magic AI Try-On (Gemini + Imagen 3)**
 ```python
-# Step 1: Analyze user photo with Gemini 3 Pro
-analysis = client.models.generate_content(
-    model='gemini-3-pro',
-    contents=[image_bytes, analysis_prompt]
-)
+# Step 1: Analyze user photo with Gemini
+analysis = client.models.generate_content(model='gemini-2.5-flash', ...)
 
 # Step 2: Generate try-on with Imagen 3
 result = client.models.generate_images(
@@ -78,12 +71,22 @@ result = client.models.generate_images(
     prompt=generation_prompt
 )
 ```
-
 **Capabilities:**
-- ✅ Advanced image analysis (pose, lighting, body type)
-- ✅ Photorealistic generation
-- ✅ Preserves user characteristics
+- ✅ Photorealistic generation with **Imagen 3**
+- ✅ Preserves user characteristics & pose
 - ✅ Professional fashion photography quality
+
+### 3. **Model Context Protocol (MCP)**
+```python
+# Real-time fashion data integration
+trends = mcp_client.get_fashion_trends(category="men")
+# Inject into Gemini context
+context += f"Current Trends: {trends}"
+```
+**Capabilities:**
+- ✅ Fetches real-time fashion trends
+- ✅ context-aware style tips for specific occasions
+- ✅ Modular & extensible architecture
 
 ---
 
@@ -99,11 +102,13 @@ result = client.models.generate_images(
 - **Django 5.2.4** - Python web framework
 - **MongoDB Atlas** - Cloud database
 - **Python 3.10+** - Core language
+- **MCP Python SDK** - Model Context Protocol
 
 ### AI/ML
-- **Google Gemini 3 Pro** - AI fashion consultant & image analysis
-- **Google Imagen 3.0** - Photorealistic image generation
+- **Google Gemini 2.5 Flash** - AI consultant & analysis
+- **Google Imagen 3.0** - Image generation
 - **google-generativeai** - Python SDK
+- **mcp** - Protocol SDK
 
 ---
 

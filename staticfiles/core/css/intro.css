@@ -1,0 +1,48 @@
+/* Intro Screen Styles */
+#intro-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2000;
+    /* High z-index to cover everything */
+    background-color: #000000;
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+#intro-screen h1 {
+    color: #ffffff;
+    background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: clamp(2rem, 10vw, 6rem);
+    font-weight: 500;
+    font-family: 'Cinzel', serif;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid;
+    animation: type 1.0s steps(20) 0.5s 1 normal both, cursor 1s step-end infinite;
+    position: relative;
+    letter-spacing: 0.1em;
+}
+
+@keyframes type {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes cursor {
+    100% {
+        border-color: transparent;
+    }
+}
