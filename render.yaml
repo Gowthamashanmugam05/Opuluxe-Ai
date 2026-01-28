@@ -3,12 +3,20 @@ services:
     name: opuluxe-ai
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn config.wsgi:application"
+    startCommand: "gunicorn config.wsgi:application -c gunicorn_config.py"
     plan: free
     autoDeploy: true
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.11
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
       - key: GEMINI_API_KEY
         sync: false
       - key: MONGODB_URI
