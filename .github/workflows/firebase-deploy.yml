@@ -25,3 +25,5 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_OPULUXE_AI }}'
           channelId: live
           projectId: opuluxe-ai
+        env:
+          FIREBASE_CLI_EXPERIMENTS: webframeworks
