@@ -22,11 +22,12 @@ class Command(BaseCommand):
             # Allow for template loading
             content = render_to_string('core/index.html', context)
             
-            # Define output path in staticfiles
-            output_path = os.path.join(settings.STATIC_ROOT, 'index.html')
+            # Define output path in staticfiles (parent of STATIC_ROOT which is staticfiles/static)
+            output_dir = os.path.dirname(settings.STATIC_ROOT)
+            output_path = os.path.join(output_dir, 'index.html')
             
-            # Ensure staticfiles dir exists (collectstatic should have created it, but just in case)
-            os.makedirs(settings.STATIC_ROOT, exist_ok=True)
+            # Ensure staticfiles dir exists
+            os.makedirs(output_dir, exist_ok=True)
             
             with open(output_path, 'w', encoding='utf-8') as f:
                 f.write(content)
