@@ -26,6 +26,7 @@ jobs:
       - name: Collect static files
         run: |
           python manage.py collectstatic --noinput
+          python manage.py build_site
         env:
           DJANGO_SETTINGS_MODULE: config.settings
           SECRET_KEY: dummy
