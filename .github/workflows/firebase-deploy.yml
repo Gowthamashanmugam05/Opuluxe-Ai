@@ -1,4 +1,4 @@
-name: Deploy to Cloud Run & Firebase
+name: Deploy Django Static Files to Firebase Hosting
 
 on:
   push:
@@ -6,30 +6,33 @@ on:
       - main
 
 jobs:
-  deploy:
+  build_and_deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Authenticate to Google Cloud
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v2'
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_OPULUXE_AI }}'
+          python-version: "3.11"
 
-      # Setup gcloud CLI
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
-      # Submit build to Cloud Build (simpler than docker build+push manually)
-      - name: Build and Deploy to Cloud Run
+      - name: Install dependencies
         run: |
-          gcloud builds submit --tag gcr.io/opuluxe-ai/opuluxe-backend .
-          gcloud run deploy opuluxe-backend --image gcr.io/opuluxe-ai/opuluxe-backend --region us-central1 --platform managed --allow-unauthenticated
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      # Deploy Hosting (which now has rewrites to Cloud Run)
-      - name: Deploy to Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Collect static files
+        run: |
+          python manage.py collectstatic --noinput
+          python manage.py build_site
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings
+          SECRET_KEY: dummy
+          DEBUG: "False"
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_OPULUXE_AI }}

@@ -133,16 +133,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Session Logic - Ensure history is not lost
-# Use Signed Cookies for Serverless/Firebase compatibility (No DB write needed)
-SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_SAVE_EVERY_REQUEST = True 
-
-# CSRF Trusted Origins for Firebase
-CSRF_TRUSTED_ORIGINS = [
-    'https://opuluxe-ai.web.app',
-    'https://opuluxe-ai.firebaseapp.com',
-    'http://127.0.0.1:8000',
-    'http://localhost:8000',
-] 
