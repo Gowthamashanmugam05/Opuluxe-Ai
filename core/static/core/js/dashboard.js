@@ -358,9 +358,18 @@ function tryOnOutfit(itemName) {
     // Try to find the person based on current context or last edited, default to first
     const currentProfile = profiles.find(p => p.id === editingProfileId) || profiles[0];
 
-    if (!currentProfile || !currentProfile.photo) {
-        showToast("Please add a profile photo first for Magic Try-On", "ri-image-line");
+    if (!currentProfile) {
+        showToast("Please create a profile first to use Magic Try-On", "ri-user-add-line");
         openMeasurementModal();
+        startNewProfile(); // Auto-start creation
+        return;
+    }
+
+    if (!currentProfile.photo) {
+        showToast("Photo required for Virtual Try-On. Please upload one.", "ri-camera-line");
+        openMeasurementModal();
+        // Immediately open the edit view for this profile so user can add photo
+        editProfile(currentProfile.id);
         return;
     }
 
@@ -1294,7 +1303,7 @@ function confirmShoppingPreferences() {
     selectedPlatforms = platforms;
     localStorage.setItem('selectedPlatforms', JSON.stringify(platforms));
 
-    const message = `Budget: ₹${budget} INR. Platforms: ${platforms.join(', ')}. Brands: ${brands.length > 0 ? brands.join(', ') : 'any'}. Suggestions for my fashion request?`;
+    const message = `Budget: ₹${budget} INR. Platforms: ${platforms.join(', ')}. Brands: ${brands.length > 0 ? brands.join(', ') : 'any'}. Please provide specific product recommendations (names and details) that fit these criteria.`;
     setInput(message);
 }
 
