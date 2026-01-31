@@ -190,7 +190,7 @@ def api_chat(request):
                     
                     trends_data = get_fashion_trends_sync(category)
                     if "error" not in trends_data:
-                        mcp_context = f"\n\n[REAL-TIME TREND DATA via MCP]: {json.dumps(trends_data, indent=2)}\n"
+                        mcp_context = f"\\n\\n[REAL-TIME TREND DATA via MCP]: {json.dumps(trends_data, indent=2)}\\n"
                         print(f"[MCP] ✓ Trends data fetched for category: {category}")
                 
                 # Check if user is asking for style tips
@@ -209,7 +209,7 @@ def api_chat(request):
                         occasion = "wedding"
                     
                     style_tip = get_style_tips_sync(occasion)
-                    mcp_context = f"\n\n[STYLE TIP via MCP]: {style_tip}\n"
+                    mcp_context = f"\\n\\n[STYLE TIP via MCP]: {style_tip}\\n"
                     print(f"[MCP] ✓ Style tip fetched for occasion: {occasion}")
                     
             except Exception as mcp_error:
@@ -229,22 +229,22 @@ def api_chat(request):
                 "Do not give final clothing links until these preferences are clarified. "
                 "AI CAPABILITIES: Leverage your enhanced reasoning to provide deeply personalized fashion advice, "
                 "analyze images with superior accuracy, and understand complex style preferences with nuanced context. "
-                "\n\n"
-                "PRODUCT RECOMMENDATION FORMAT (CRITICAL): When recommending specific clothing items or products, ALWAYS format them as follows:\n"
-                "1. Use numbered lists (1., 2., 3., etc.)\n"
-                "2. Make the product name/brand BOLD using **double asterisks**\n"
-                "3. Include a brief description after the product name\n"
-                "4. Optionally mention price range or key features\n"
-                "\n"
-                "EXAMPLE FORMAT:\n"
-                "1. **Nike Air Max 270** - Comfortable running shoes with excellent cushioning\n"
-                "   - Price: ₹12,000 - ₹15,000\n"
-                "   - Available in multiple colors\n"
-                "\n"
-                "2. **Levi's 511 Slim Fit Jeans** - Classic denim with modern slim cut\n"
-                "   - Price: ₹3,500 - ₹5,000\n"
-                "   - Perfect for casual and semi-formal occasions\n"
-                "\n"
+                "\\n\\n"
+                "PRODUCT RECOMMENDATION FORMAT (CRITICAL): When recommending specific clothing items or products, ALWAYS format them as follows:\\n"
+                "1. Use numbered lists (1., 2., 3., etc.)\\n"
+                "2. Make the product name/brand BOLD using **double asterisks**\\n"
+                "3. Include a brief description after the product name\\n"
+                "4. Optionally mention price range or key features\\n"
+                "\\n"
+                "EXAMPLE FORMAT:\\n"
+                "1. **Nike Air Max 270** - Comfortable running shoes with excellent cushioning\\n"
+                "   - Price: ₹12,000 - ₹15,000\\n"
+                "   - Available in multiple colors\\n"
+                "\\n"
+                "2. **Levi's 511 Slim Fit Jeans** - Classic denim with modern slim cut\\n"
+                "   - Price: ₹3,500 - ₹5,000\\n"
+                "   - Perfect for casual and semi-formal occasions\\n"
+                "\\n"
                 "This formatting is ESSENTIAL as it enables the 'Magic Try-On' and 'Shop Now' features for users."
             )
             
@@ -336,7 +336,10 @@ def api_chat(request):
             return JsonResponse({'success': True, 'reply': response_text})
 
         except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
+            error_msg = str(e)
+            if "PERMISSION_DENIED" in error_msg or "leaked" in error_msg.lower() or "403" in error_msg:
+                 return JsonResponse({'success': False, 'error': "System security alert: The AI credential has been invalidated. Please contact the administrator to update the API Key."})
+            return JsonResponse({'success': False, 'error': error_msg})
     return JsonResponse({'success': False, 'error': 'Invalid method'})
 
 @csrf_exempt
