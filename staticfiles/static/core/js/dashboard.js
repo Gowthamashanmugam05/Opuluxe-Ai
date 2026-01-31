@@ -222,10 +222,11 @@ function streamReply(text) {
             } else {
                 contentDiv.textContent = chunk;
             }
-            renderCodeBlocks(contentDiv);
+            // renderCodeBlocks(contentDiv);
             scrollToBottom();
         } else {
             clearInterval(interval);
+            renderCodeBlocks(contentDiv);
             addSuggestions(["Tell me more"]);
             injectTryOnButtons(contentDiv);
             if (needsProfile) injectProfileSelector();
@@ -357,9 +358,18 @@ function tryOnOutfit(itemName) {
     // Try to find the person based on current context or last edited, default to first
     const currentProfile = profiles.find(p => p.id === editingProfileId) || profiles[0];
 
-    if (!currentProfile || !currentProfile.photo) {
-        showToast("Please add a profile photo first for Magic Try-On", "ri-image-line");
+    if (!currentProfile) {
+        showToast("Please create a profile first to use Magic Try-On", "ri-user-add-line");
         openMeasurementModal();
+        startNewProfile(); // Auto-start creation
+        return;
+    }
+
+    if (!currentProfile.photo) {
+        showToast("Photo required for Virtual Try-On. Please upload one.", "ri-camera-line");
+        openMeasurementModal();
+        // Immediately open the edit view for this profile so user can add photo
+        editProfile(currentProfile.id);
         return;
     }
 
@@ -394,7 +404,7 @@ function tryOnOutfit(itemName) {
                 
                 <div style="margin-top:30px; display:flex; gap:12px; justify-content:center;">
                     <button class="setting-btn" style="background:rgba(255,255,255,0.05); border:1px solid var(--border);" onclick="showToast('Style Saved', 'ri-bookmark-line')"><i class="ri-bookmark-line"></i> Save Outfit</button>
-                    <button class="setting-btn" onclick="window.location.href = window.getProductUrl('${itemName.replace(/'/g, "\\'")}');">Buy this Look</button>
+                    <button class="setting-btn" onclick="window.open(window.getProductUrl('${itemName.replace(/'/g, "\\'").replace(/"/g, "&quot;")}'), '_blank')">Buy this Look</button>
                 </div>
             </div>
         </div>
@@ -1293,7 +1303,7 @@ function confirmShoppingPreferences() {
     selectedPlatforms = platforms;
     localStorage.setItem('selectedPlatforms', JSON.stringify(platforms));
 
-    const message = `Budget: ₹${budget} INR. Platforms: ${platforms.join(', ')}. Brands: ${brands.length > 0 ? brands.join(', ') : 'any'}. Suggestions for my fashion request?`;
+    const message = `Budget: ₹${budget} INR. Platforms: ${platforms.join(', ')}. Brands: ${brands.length > 0 ? brands.join(', ') : 'any'}. Please provide specific product recommendations (names and details) that fit these criteria.`;
     setInput(message);
 }
 
@@ -1310,3 +1320,14 @@ window.getProductUrl = (name) => {
     return generateProductPlatformUrl(name, platform);
 };
 window.shareChat = shareChat;
+
+// --- SELF-DIAGNOSTIC ---
+(function () {
+    if (window.location.port !== '8000') {
+        const toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed; top:20px; right:20px; background:rgba(255,50,50,0.9); color:white; padding:15px; border-radius:12px; z-index:9999; backdrop-filter:blur(10px); box-shadow:0 10px 30px rgba(0,0,0,0.3); font-size:13px; max-width:300px; display:flex; gap:10px; align-items:center;';
+        toast.innerHTML = '<i class=\
+i-alert-line\ style=\ont-size:24px;\></i><div><strong>Port Mismatch detected</strong><br>Please use port 8000 for backend connectivity.<br><a href=\http://127.0.0.1:8000/dashboard/\ style=\color:white; text-decoration:underline; font-weight:bold;\>Click here to switch</a></div>';
+        document.body.appendChild(toast);
+    }
+})();
